@@ -228,7 +228,7 @@ a:focus {
 }
 
 @-webkit-keyframes pulse {    
-    0 {
+    0% {
         -webkit-transform: scale(1);
         transform: scale(1);
     }
@@ -312,7 +312,7 @@ a:focus {
     color: #00FFFB;
     background-color: rgba(76, 111, 112, 0.6);
     */
-}*/
+}
 
 ul.banner-social-buttons {
     margin-top: 0;
