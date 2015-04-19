@@ -63,7 +63,7 @@
                         <a class="page-scroll" href="#timespancomparison">Timespan Comparison</a>
                     </li>
                     <li>
-                        <a class="page-scroll" href="#contact">Contact</a>
+                        <a class="page-scroll" href="#contact"><i class="fa fa-envelope"></i></a>
                     </li>
                 </ul>
             </div>
@@ -90,55 +90,83 @@
     </header>
 
     <!-- actualdata Section -->
-    <section id="actualdata" class="container content-section text-center">
+    <section id="actualdata" class="container content-section">
                 <h2>Actual data</h2>
-                <p>Grayscale is a free Bootstrap 3 theme created by Start Bootstrap. It can be yours right now, simply download the template on <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.</p>
-                <p>This theme features stock photos by <a href="http://gratisography.com/">Gratisography</a> along with a custom Google Maps skin courtesy of <a href="http://snazzymaps.com/">Snazzy Maps</a>.</p>
-                <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with LESS files for easy customization.</p>
+                <div class="col-xs-12 col-md-6" >
+					<p>Temperature</p>
+					<div class="col-xs-6 text-center" >
+						<p><strong>Ø 22°C</strong></p>
+					</div>
+					<div class="col-xs-6" >
+						<p>
+						max. 27°C
+						</br>
+						min. 21°C
+						</p>
+					</div>
+				</div>
+                <div class="col-xs-12 col-md-6" >
+					<p>Humidity</p>
+					<div class="col-xs-6 text-center" >
+						<p><strong>Ø 54%</strong></p>
+					</div>
+					<div class="col-xs-6" >
+					<p>
+					max. 55%
+					</br>
+					min. 45%
+					</p>
+					</div>
+				</div>
     </section>
 
     <!-- sensorcomparison Section -->
     <section id="sensorcomparison" class="container content-section">
                     <h2>Sensor comparison</h2>
 					<div class="row">
-						<div class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
+						<div id="rooms" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
 							<label class="btn btn-default active">
-								<input type="checkbox"> 2/222
+								<input type="radio" value="2/222"> 2/222</input>
 							</label>
 							<label class="btn btn-default active">
-								<input type="checkbox"> 2/223
+								<input type="radio" value="2/223"> 2/223</input>
 							</label>
 							<label class="btn btn-default active">
-								<input type="checkbox"> 2/225
+								<input type="radio" value="2/225"> 2/225</input>
 							</label>
 							<label class="btn btn-default active">
-								<input type="checkbox"> 2/229
+								<input type="radio" value="2/229"> 2/229</input>
 							</label>
 						</div>
-						<div class="btn-group col-xs-12 col-md-6 col-lg-3" data-toggle="buttons">
+						<div id="sensortype" class="btn-group col-xs-12 col-md-6 col-lg-3" data-toggle="buttons">
 							<label class="btn btn-default">
-								<input type="radio"/> Temperature
+								<input type="radio" value="temperature"> Temperature</input>
 							</label> 
 							<label class="btn btn-default active">
-								<input type="radio"/> Humidity
+								<input type="radio" value="humidity"> Humidity </input>
 							</label> 
 						</div>					   
-						<div class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
+						<div id="aggregation" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
 							<label class="btn btn-default">
-								<input type="radio"/> Day
+								<input type="radio" value="day"> Day</input>
 							</label> 
 							<label class="btn btn-default active">
-								<input type="radio"/> Week
+								<input type="radio" value="week"> Week</input>
 							</label> 
 							<label class="btn btn-default">
-								<input type="radio"/> Month
+								<input type="radio" value="month"> Month </input>
 							</label> 
 							<label class="btn btn-default">
-								<input type="radio"/> Year
+								<input type="radio" value="year"> Year </input>
 							</label> 
 						</div>
 						<div class="form-group date col-xs-3">
 							<input class="form-control datepickercss" type="text" id="datepicker1">
+						</div>
+						<div class="col-xs-3 col-md-offset-9">
+							<label id="sensorcomparisonsubmit" class="btn btn-primary">
+								Submit
+							</label>
 						</div>
 					</div>
 					<div id="chartSensorComparsionHumidity" style="height:500px;"></div>
@@ -149,46 +177,46 @@
     <section id="timespancomparison" class="container content-section">
                     <h2>Timespan comparison</h2>
 					<div class="row">
-						<div class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
+						<div id="rooms" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
 							<label class="btn btn-default active">
-								<input type="radio"> 2/222
+								<input type="radio" value="2/222"> 2/222</input>
 							</label>
 							<label class="btn btn-default">
-								<input type="radio"> 2/223
+								<input type="radio" value="2/223"> 2/223</input>
 							</label>
 							<label class="btn btn-default">
-								<input type="radio"> 2/225
+								<input type="radio" value="2/225"> 2/225</input>
 							</label>
 							<label class="btn btn-default">
-								<input type="radio"> 2/229
+								<input type="radio" value="2/229"> 2/229</input>
 							</label>
 						</div>
-						<div class="btn-group col-xs-12 col-md-6 col-lg-3" data-toggle="buttons">
+						<div id="sensortype" class="btn-group col-xs-12 col-md-6 col-lg-3" data-toggle="buttons">
 							<label class="btn btn-default active">
-								<input type="radio"/> Temperature
+								<input type="radio" value="temperature"> Temperature</input>
 							</label> 
 							<label class="btn btn-default">
-								<input type="radio"/> Humidity
+								<input type="radio" value="humidity"> Humidity </input>
 							</label> 
 						</div>					   
-						<div class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
+						<div id="aggregation" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
 							<label class="btn btn-default">
-								<input type="radio"/> Day
+								<input type="radio" value="day"> Day</input>
 							</label> 
 							<label class="btn btn-default active">
-								<input type="radio"/> Week
+								<input type="radio" value="week"> Week</input>
 							</label> 
 							<label class="btn btn-default">
-								<input type="radio"/> Month
+								<input type="radio" value="month"> Month </input>
 							</label> 
 							<label class="btn btn-default">
-								<input type="radio"/> Year
+								<input type="radio" value="year"> Year </input>
 							</label> 
 						</div>
-						<div class="form-group date col-xs-1">
+						<div id="start1" class="form-group date col-xs-1">
 							<input class="form-control datepickercss" type="text" id="datepicker2">
 						</div>
-						<div class="form-group date col-xs-1">
+						<div id= "start2" class="form-group date col-xs-1">
 							<input class="form-control datepickercss" type="text" id="datepicker3">
 						</div>						
 					</div>
@@ -197,12 +225,12 @@
     </section>
 	
     <!-- Contact Section -->
-    <section id="contact" class="container content-section text-center">
+	<footer id="contact" class="text-center">
                 <h2>Contact us.</h2>
                 <p>Feel free to email us to provide some feedback on our website, give us suggestions for new sensor types, or to just say hello!</p>
                 <p><a href="mailto:22mano1bil@hft-stuttgart.de">22mano1bil@hft-stuttgart.de</a>
                 </p>
-                <ul class="list-inline banner-social-buttons">
+                <!--ul class="list-inline banner-social-buttons">
                     <li>
                         <a href="https://twitter.com" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
                     </li>
@@ -212,10 +240,9 @@
                     <li>
                         <a href="https://plus.google.com" class="btn btn-default btn-lg"><i class="fa fa-google-plus fa-fw"></i> <span class="network-name">Google+</span></a>
                     </li>
-                </ul>
+                </ul-->
 
-    </section>
-    <footer class="text-center">
+				</br></br></br>
             <p>Copyright &copy; HFT working group 2015</p>
     </footer>
 
@@ -225,6 +252,7 @@
 	
     <!-- Plugin JavaScript -->
     <script src="js/jquery.easing.min.js"></script>
+	
 	
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
@@ -245,7 +273,9 @@
 	
 	<script src="js/locales/bootstrap-datepicker.de.js"></script>	
 	
-	<script type="text/javascript">
+	<script src="js/specificcontroller.js"></script>
+	
+	<!--script type="text/javascript">
 		$(document).ready(function () {	
 			$('#datepicker1').datepicker({
 				format: "dd/mm/yyyy",
@@ -266,7 +296,25 @@
 			});  
 			$("#datepicker3").datepicker("update", new Date());
 		});
-	</script>
+		
+		$(document).ready(function () {	
+			var arr = [];
+			$.each( $('#sensorcomparison #rooms .active input'), function(i,v) { arr[i]=v['value']; });
+			console.log(arr.toString());
+			console.log($('#sensorcomparison #rooms .active input').val());
+			console.log($('#sensorcomparison #sensortype .active input').val());
+			console.log($('#sensorcomparison #aggregation .active input').val());
+			console.log($('#sensorcomparison #rooms .active input').val());
+			console.log($('#sensorcomparison #rooms .active input').val());
+		});		
+		$(document).ready(function () {	
+			console.log($('#timespancomparison #rooms .active input').val());
+			console.log($('#timespancomparison #sensortype .active input').val());
+			console.log($('#timespancomparison #aggregation .active input').val());
+			console.log($('#timespancomparison #rooms .active input').val());
+			console.log($('#timespancomparison #rooms .active input').val());
+		});
+	</script-->
 </body>
 
 </html>

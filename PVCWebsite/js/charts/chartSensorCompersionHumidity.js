@@ -1,8 +1,10 @@
 ﻿$(function () {
     $('#chartSensorComparsionHumidity').highcharts({
+		chart: {
+            backgroundColor: null
+        },
         title: {
             text: 'Daily Average Humidity',
-            x: -20 //center
         },
         colors: ['#B15983','#D47D6A','#4D9A6A', '#9DC462'],
         //colors: ['#8E2F5C', '#AA4C39', '#297B48', '#739D34'],
@@ -29,9 +31,9 @@
             valueSuffix: '%'
         },
         legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
+            //layout: 'vertical',
+            //align: 'right',
+            //verticalAlign: 'middle',
             borderWidth: 1
         },
         series: [{
