@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var jsonfile= require("./hello.json");
+var jsonfile= require("./dummydata.json");
 var path = require('path')
 
 var server = app.listen(7085, function () {
@@ -15,9 +15,13 @@ var server = app.listen(7085, function () {
 app.use(express.static(path.resolve(__dirname +'/../PVCWebsite')));
 
 
-// respond with "Hello World!" on the homepage
 app.get('/data', function (req, res) {
-  //res.send('hallo.json');
-    res.json(jsonfile);
+
+	console.log("sensortype: " + req.query.sensortype);	
+	console.log("areas: " + req.query.areas);
+	console.log("aggregation: " + req.query.aggregation);
+	console.log("startdate: " + req.query.startdate);
+
+	res.json(jsonfile);
 });
 
