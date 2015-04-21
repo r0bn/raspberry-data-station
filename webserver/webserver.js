@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var jsonfile= require("./hello.json");
+var path = require('path')
 
 var server = app.listen(7085, function () {
 
@@ -11,7 +12,7 @@ var server = app.listen(7085, function () {
 
 });
 
-app.use(express.static('../PVCWebsite'));
+app.use(express.static(path.resolve(__dirname +'/../PVCWebsite')));
 
 
 // respond with "Hello World!" on the homepage
