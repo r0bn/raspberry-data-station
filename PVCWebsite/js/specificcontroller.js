@@ -19,39 +19,22 @@ $(document).ready(function() {
     $("#datepicker3").datepicker("update", new Date());
 });
 
-$(document).ready(function() {
-    var arr = [];
-    $.each($('#sensorcomparison #rooms .active input'), function(i, v) {
-        arr[i] = v['value'];
-    });
-    console.log(arr.toString());
-    console.log($('#sensorcomparison #sensortype .active input').val());
-    console.log($('#sensorcomparison #aggregation .active input').val());
-    console.log($('#datepicker1').val());
-});
 function getParametersOfSensorComparsion() {
     var arr = [];
-    $.each($('#sensorcomparison #rooms .active input'), function(i, v) {
+    $.each($('#sensorcomparison #rooms option:selected'), function(i, v) {
         arr[i] = v['value'];
     });
     var areas = arr.toString();
-    var sensortype = $('#sensorcomparison #sensortype .active input').val();
+    var sensortype = $('#sensorcomparison #sensortype option:selected').val();
     var aggregation = $('#sensorcomparison #aggregation .active input').val();
     var startdate = $('#datepicker1').val();
     return {'areas': areas, 'sensortype': sensortype, 'aggregation': aggregation, 'startdate': startdate};
 }
-$(document).ready(function() {
-    console.log($('#timespancomparison #rooms .active input').val());
-    console.log($('#timespancomparison #sensortype .active input').val());
-    console.log($('#timespancomparison #aggregation .active input').val());
-    console.log($('#datepicker2').val());
-    console.log($('#datepicker3').val());
-});
 
 $('#sensorcomparisonsubmit').click(function() {
     $.ajax({
         type: 'GET',
-        url: 'test.json',
+        url: '/data',
         dataType: 'json',
         data: getParametersOfSensorComparsion(),
         success: function(json) {
@@ -69,7 +52,7 @@ $('#togglesensorcomparsioncockpit').click(function() {
 
 function updateSensorComparison(json) {
     //get chart as object to modify it
-    var chart = $('#chartSensorComparsionHumidity').highcharts();
+    var chart = $('#chartSensorComparsion').highcharts();
     //set title of chart
     chart.setTitle({
         text: json['data']['title']

@@ -10,19 +10,21 @@
         <meta name="author" content="Nora Maehser-Hipp">
 
         <title>Sensor data Analytics - HFT Stuttgart</title>
+
+
+
+
+        <!-- Grayscale Selectpicker -->
+        <link href="css/bootstrap-select.css" rel="stylesheet" type="text/css">
         <!-- Datetimepicker -->
         <link href="css/bootstrap-datepicker.css" rel="stylesheet" type="text/css">
-
-        <!-- Bootstrap Core CSS -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-
-        <!-- Custom CSS -->
-        <link href="css/grayscale.css" rel="stylesheet">
-
         <!-- Custom Fonts -->
         <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
         <link href="font-awesome/css/h1font.css" rel="stylesheet" type="text/css">
-
+        <!-- Bootstrap Core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Grayscale Template -->
+        <link href="css/grayscale.css" rel="stylesheet">
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -124,86 +126,23 @@
         <section id="sensorcomparison" class="container content-section">
             <h2>Sensor comparison</h2>
             <!--div id="sensorcomparsioncockpit" class="hidden"-->
-                <div class="row">
-                    <div id="rooms" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
-                        <label class="btn btn-default active">
-                            <input type="radio" value="2/222"/> 2/222
-                        </label>
-                        <label class="btn btn-default active">
-                            <input type="radio" value="2/223"> 2/223</input>
-                        </label>
-                        <label class="btn btn-default active">
-                            <input type="radio" value="2/225"> 2/225</input>
-                        </label>
-                        <label class="btn btn-default active">
-                            <input type="radio" value="2/229"> 2/229</input>
-                        </label>
-                    </div>
-                    <div id="sensortype" class="btn-group col-xs-12 col-md-6 col-lg-3" data-toggle="buttons">
-                        <label class="btn btn-default">
-                            <input type="radio" value="temperature"> Temperature</input>
-                        </label> 
-                        <label class="btn btn-default active">
-                            <input type="radio" value="humidity"> Humidity </input>
-                        </label> 
-                    </div>					   
-                    <div id="aggregation" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
-                        <label class="btn btn-default">
-                            <input type="radio" value="day"> Day</input>
-                        </label> 
-                        <label class="btn btn-default active">
-                            <input type="radio" value="week"> Week</input>
-                        </label> 
-                        <label class="btn btn-default">
-                            <input type="radio" value="month"> Month </input>
-                        </label> 
-                        <label class="btn btn-default">
-                            <input type="radio" value="year"> Year </input>
-                        </label> 
-                    </div>
-                    <div class="form-group date col-xs-3">
-                        <input class="form-control datepickercss" type="text" id="datepicker1">
-                    </div>
-                    <div class="col-xs-3 col-md-offset-9">
-                        <label id="sensorcomparisonsubmit" class="btn btn-primary">
-                            Submit
-                        </label>
-                    </div>
-                </div>
-            <!--label id="togglesensorcomparsioncockpit" class="btn btn-circle-sm pull-right">
-                <i class="fa fa-angle-double-down animated"></i>
-            </label-->
-            <div id="chartSensorComparsionHumidity" style="height:500px;"></div>
-
-        </section>
-
-        <!-- timespancomparison Section -->
-        <section id="timespancomparison" class="container content-section">
-            <h2>Timespan comparison</h2>
             <div class="row">
-                <div id="rooms" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
-                    <label class="btn btn-default active">
-                        <input type="radio" value="2/222"> 2/222</input>
-                    </label>
-                    <label class="btn btn-default">
-                        <input type="radio" value="2/223"> 2/223</input>
-                    </label>
-                    <label class="btn btn-default">
-                        <input type="radio" value="2/225"> 2/225</input>
-                    </label>
-                    <label class="btn btn-default">
-                        <input type="radio" value="2/229"> 2/229</input>
-                    </label>
+                <div id="rooms" class="roomsCSS">
+                    <select class="selectpicker" multiple data-selected-text-format="count">
+                        <option disabled>Bau 2</option>
+                        <option value="2/222" selected>&nbsp;2/222</option>
+                        <option value="2/223" selected>&nbsp;2/223</option>
+                        <option value="2/225">&nbsp;2/225</option>
+                        <option value="2/229">&nbsp;2/229</option>
+                    </select>
                 </div>
-                <div id="sensortype" class="btn-group col-xs-12 col-md-6 col-lg-3" data-toggle="buttons">
-                    <label class="btn btn-default active">
-                        <input type="radio" value="temperature"> Temperature</input>
-                    </label> 
-                    <label class="btn btn-default">
-                        <input type="radio" value="humidity"> Humidity </input>
-                    </label> 
-                </div>					   
-                <div id="aggregation" class="btn-group col-xs-12 col-md-4 col-lg-3" data-toggle="buttons">
+                <div id="sensortype" class="sensortypeCSS" >
+                    <select class="selectpicker show-tick">
+                        <option value="temperature"> Temperature</option>
+                        <option value="humidity"> Humidity </option>
+                    </select>
+                </div>		   
+                <div id="aggregation" class="btn-group aggregationCSS" data-toggle="buttons">
                     <label class="btn btn-default">
                         <input type="radio" value="day"> Day</input>
                     </label> 
@@ -217,14 +156,68 @@
                         <input type="radio" value="year"> Year </input>
                     </label> 
                 </div>
-                <div id="start1" class="form-group date col-xs-1">
+                <div class="form-group date dateCSS">
+                    <input class="form-control datepickercss" type="text" id="datepicker1">
+                </div>
+                <div class="submitCSS">
+                    <label id="sensorcomparisonsubmit" class="btn btn-primary">
+                        Submit
+                    </label>
+                </div>
+            </div>
+            <!--label id="togglesensorcomparsioncockpit" class="btn btn-circle-sm pull-right">
+                <i class="fa fa-angle-double-down animated"></i>
+            </label-->
+            <div id="chartSensorComparsion" style="height:500px;"></div>
+
+        </section>
+
+        <!-- timespancomparison Section -->
+        <section id="timespancomparison" class="container content-section">
+            <h2>Timespan comparison</h2>
+            <div class="row">
+                <div id="rooms" class="roomsCSS">
+                    <select class="selectpicker show-tick">
+                        <option disabled>Bau 2</option>
+                        <option value="2/222" selected>&nbsp;2/222</option>
+                        <option value="2/223">&nbsp;2/223</option>
+                        <option value="2/225">&nbsp;2/225</option>
+                        <option value="2/229">&nbsp;2/229</option>
+                    </select>
+                </div>
+                <div id="sensortype" class="sensortypeCSS" >
+                    <select class="selectpicker show-tick">
+                        <option value="temperature"> Temperature</option>
+                        <option value="humidity"> Humidity </option>
+                    </select>
+                </div>				   
+                <div id="aggregation" class="aggregationCSS btn-group " data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input type="radio" value="day"> Day</input>
+                    </label> 
+                    <label class="btn btn-default active">
+                        <input type="radio" value="week"> Week</input>
+                    </label> 
+                    <label class="btn btn-default">
+                        <input type="radio" value="month"> Month </input>
+                    </label> 
+                    <label class="btn btn-default">
+                        <input type="radio" value="year"> Year </input>
+                    </label> 
+                </div>
+                <div id="start1" class="dateCSS form-group date ">
                     <input class="form-control datepickercss" type="text" id="datepicker2">
                 </div>
-                <div id= "start2" class="form-group date col-xs-1">
+                <div id= "start2" class="dateCSS form-group date ">
                     <input class="form-control datepickercss" type="text" id="datepicker3">
-                </div>						
+                </div>	
+                <div class="submitCSS">
+                    <label id="timespancomparisonsubmit" class="btn btn-primary">
+                        Submit
+                    </label>
+                </div>				
             </div>
-            <div id="chartTimespanComparsionTemperature" style="height:500px;"></div>
+            <div id="chartTimespanComparsion" style="height:500px;"></div>
 
         </section>
 
@@ -264,61 +257,16 @@
         <!-- Custom Theme JavaScript -->
         <script src="js/grayscale.js"></script>
 
+        <!--Datetimepicker -->
+        <script src="js/bootstrap-select.js"></script>	
+        <script src="js/bootstrap-datepicker.js"></script>	
+        <script src="js/specificcontroller.js"></script>
+        
         <!-- Highcharts -->
         <script src="js/highcharts.js"></script>
+        <script src="js/charts/chartSensorCompersion.js"></script>	
+        <script src="js/charts/chartTimespanCompersion.js"></script>		
 
-        <script src="js/charts/chartSensorCompersionTemperature.js"></script>	
-        <script src="js/charts/chartSensorCompersionHumidity.js"></script>	
-        <script src="js/charts/chartTimespanCompersionTemperature.js"></script>	
-        <script src="js/charts/chartTimespanCompersionHumidity.js"></script>	
-
-        <!--Datetimepicker -->
-        <script src="js/bootstrap-datepicker.js"></script>	
-
-        <script src="js/locales/bootstrap-datepicker.de.js"></script>	
-
-        <script src="js/specificcontroller.js"></script>
-
-        <!--script type="text/javascript">
-                $(document).ready(function () {	
-                        $('#datepicker1').datepicker({
-                                format: "dd/mm/yyyy",
-                                //language: 'de',
-                                autoclose: 'true'
-                        });  
-                        $("#datepicker1").datepicker("update", new Date());
-                        $('#datepicker2').datepicker({
-                                format: "dd/mm/yyyy",
-                                //language: 'de',
-                                autoclose: 'true'
-                        });  
-                        $("#datepicker2").datepicker("update", new Date());
-                        $('#datepicker3').datepicker({
-                                format: "dd/mm/yyyy",
-                                //language: 'de',
-                                autoclose: 'true'
-                        });  
-                        $("#datepicker3").datepicker("update", new Date());
-                });
-                
-                $(document).ready(function () {	
-                        var arr = [];
-                        $.each( $('#sensorcomparison #rooms .active input'), function(i,v) { arr[i]=v['value']; });
-                        console.log(arr.toString());
-                        console.log($('#sensorcomparison #rooms .active input').val());
-                        console.log($('#sensorcomparison #sensortype .active input').val());
-                        console.log($('#sensorcomparison #aggregation .active input').val());
-                        console.log($('#sensorcomparison #rooms .active input').val());
-                        console.log($('#sensorcomparison #rooms .active input').val());
-                });		
-                $(document).ready(function () {	
-                        console.log($('#timespancomparison #rooms .active input').val());
-                        console.log($('#timespancomparison #sensortype .active input').val());
-                        console.log($('#timespancomparison #aggregation .active input').val());
-                        console.log($('#timespancomparison #rooms .active input').val());
-                        console.log($('#timespancomparison #rooms .active input').val());
-                });
-        </script-->
     </body>
 
 </html>
