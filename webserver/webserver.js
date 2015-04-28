@@ -21,6 +21,27 @@ app.get('/data', function (req, res) {
 	console.log("areas: " + req.query.areas);
 	console.log("aggregation: " + req.query.aggregation);
 	console.log("startdate: " + req.query.startdate);
+	
+	var request = require('request');
+
+request.post(
+    'http://www.yoursite.com/formpage',
+    { form: { key: 'value' } },
+    function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        }
+    }
+);
+	
+	http.get ( {
+		area : "xy",
+		sensortype : "xy",
+		startDate : "xy",
+		endDate : "xy",
+		aggregation : "xy"
+		
+	})
 
 	res.json(jsonfile);
 });
