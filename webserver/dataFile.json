@@ -1,0 +1,74 @@
+[
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"3",
+		"Zeitstempel":"2015-04-28 00:00:00"
+	},
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"5",
+		"Zeitstempel":"2015-04-29 00:00:00"
+	},
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"8",
+		"Zeitstempel":"2015-04-30 00:00:00"
+	},
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"4",
+		"Zeitstempel":"2015-05-01 00:00:00"
+	},
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"9",
+		"Zeitstempel":"2015-05-02 00:00:00"
+	},
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"22",
+		"Zeitstempel":"2015-05-03 00:00:00"
+	},
+	{
+		"Datenstation":"2/223",
+		"avg(Messwert)":"1",
+		"Zeitstempel":"2015-05-04 00:00:00"
+	},
+	
+	
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"6",
+		"Zeitstempel":"2015-04-28 00:00:00"
+	},
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"12",
+		"Zeitstempel":"2015-04-29 00:00:00"
+	},
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"5",
+		"Zeitstempel":"2015-04-30 00:00:00"
+	},
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"3",
+		"Zeitstempel":"2015-05-01 00:00:00"
+	},
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"8",
+		"Zeitstempel":"2015-05-02 00:00:00"
+	},
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"21",
+		"Zeitstempel":"2015-05-03 00:00:00"
+	},
+	{
+		"Datenstation":"2/222",
+		"avg(Messwert)":"2",
+		"Zeitstempel":"2015-05-04 00:00:00"
+	}	
+]
