@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var jsonfile= require("./dummydata.json");
+var jsonfile= require(__dirname + "/dummydata.json");
 var path = require('path')
 
 var server = app.listen(7085, function () {
