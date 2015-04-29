@@ -6,9 +6,90 @@ var app = express();
 //app.use(bodyParser.json());
 var jsonParser = bodyParser.json()
 
-app.get('/get', function(req, res){
-        res.send('Got a Get-Request');
+//Execute a received query and send the result back 
+app.post('/query', jsonParser, function(req, res){
+    
+    	var areas, sensortype, startDate, endDate, aggregation;
+    
+        if("areas" in req.body)
+        {
+        	areas = req.body.areas;
+        }
+        else
+        {
+        	console.log("Fehlender Parameter areas");
+         	res.send(500);
+         	return;
+        }
+        if("sensortype" in req.body)
+        {
+        	sensortype = req.body.sensortype;
+        }
+        else
+        {
+        	console.log("Fehlender Parameter sensortype");
+         	res.sendStatus(500);
+        }
+        if("startDate" in req.body)
+        {
+        	startDate = req.body.startDate;
+        }
+        else
+        {
+        	console.log("Fehlender Parameter startDate");
+         	res.sendStatus(500);
+         	return;
+        }
+        if("endDate" in req.body)
+        {
+        	endDate = req.body.endDate;
+        }
+        else
+        {
+        	console.log("Fehlender Parameter endDate");
+         	res.sendStatus(500);
+         	return;
+        }
+        if("aggregation" in req.body)
+        {
+        	aggregation = req.body.aggregation;
+        }
+        else
+        {
+        	console.log("Fehlender Parameter aggregation");
+         	res.sendStatus(500);
+         	return;
+        }
         
+        //Get the queried values from database
+        var sqlite3 = require('sqlite3').verbose();
+		var db = new sqlite3.Database('database.db'); 
+		
+		var query = "SELECT avg(M.Messwert) AS Average, min(M.Messwert)AS Minimum, "+
+					"max(M.Messwert) AS Maximum, strftime(\"%Y-%m-%d %H:%M:%S\",M.Zeitstempel) AS Timestamp "+
+					"FROM Messwerte AS M "+
+					"JOIN Sensoren AS SE ON SE.ID = M.SensorID "+
+					"JOIN Datenstationen AS D ON SE.DatenstationID = D.ID "+
+					"JOIN Sensortyp AS ST ON SE.SensortypID = ST.ID "+
+					"WHERE strftime(\"%Y-%m-%d\", M.Zeitstempel) "+
+					"BETWEEN \""+startDate+"\" "+ 
+					"AND \""+endDate+"\" "+
+					"AND D.Standort = \""+areas+"\" "+
+					"AND ST.Name = \""+sensortype+"\" "+
+					"GROUP BY strftime(\"%"+aggregation+"\", M.Zeitstempel)";
+		
+		
+		var resultObj = [];
+		db.each(query, 
+				function (err, row){
+					//console.log(row);
+					resultObj.push(row);
+				},
+				function(err, numberOfRows){
+					//console.log(resultObj);
+					//res.send(resultObj);
+					res.send(JSON.stringify(resultObj));
+				});
 })
 
 //Global variables
@@ -31,6 +112,8 @@ app.post('/insert', jsonParser, function(req, res){
          {
          	console.log("Fehlender Parameter DatenstationID");
          	res.sendStatus(500);
+         	return;
+         	
          }
          if("Zeitstempel" in req.body)
          {
@@ -40,6 +123,7 @@ app.post('/insert', jsonParser, function(req, res){
          {
          	console.log("Fehlender Parameter Zeitstempel");
          	res.sendStatus(500);
+         	return;
          }
          if("Messwert" in req.body)
          {
@@ -50,6 +134,7 @@ app.post('/insert', jsonParser, function(req, res){
          {
          	console.log("Fehlender Parameter Messwert");
          	res.sendStatus(500);
+         	return;
          }
          // if("SensorID" in req.body)
 //          {
@@ -68,6 +153,7 @@ app.post('/insert', jsonParser, function(req, res){
          {
          	console.log("Fehlender Parameter Sensortyp");
          	res.sendStatus(500);
+         	return;
          }
          
         //Insert the new values into the database

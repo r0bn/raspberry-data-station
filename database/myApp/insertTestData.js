@@ -5,8 +5,9 @@
  db.serialize(function() {
 
 var stmt = db.prepare("INSERT INTO Datenstationen (ID, Standort) VALUES (?, ?)");
-    for (var i = 1; i <= 10; i++) {
-        stmt.run(i, "Gebäude " + i);
+    var area = "1/11";
+    for (var i = 1; i <= 2; i++) {
+        stmt.run(i, area+i);
     }
     stmt.finalize();
     
@@ -18,8 +19,13 @@ var stmt = db.prepare("INSERT INTO Datenstationen (ID, Standort) VALUES (?, ?)")
     });
     
 var stmt = db.prepare("INSERT INTO Messwerte (ID, Zeitstempel, SensorID, Messwert) VALUES (?, ?, ?, ?)");
-    for (var i = 1; i <= 10; i++) {
-        stmt.run(i, new Date().getTime(), i, i);
+    var time = "2015-04-0";
+    var sensorID = 1;
+    for (var i = 1; i < 10; i++) {
+        stmt.run(i, "2015-04-0"+i+" 00:00:00", sensorID, i);
+        if(i%5 == 0){
+        	sensorID = 2;
+        }
     }
     stmt.finalize();
     
@@ -31,7 +37,8 @@ var stmt = db.prepare("INSERT INTO Messwerte (ID, Zeitstempel, SensorID, Messwer
     });
 
 var stmt = db.prepare("INSERT INTO Sensoren (ID, DatenstationID, SensortypID) VALUES (?, ?, ?)");
-    for (var i = 1; i <= 10; i++) {
+    
+    for (var i = 1; i <= 2; i++) {
         stmt.run(i, i, i);
     }
     stmt.finalize();
@@ -44,9 +51,10 @@ var stmt = db.prepare("INSERT INTO Sensoren (ID, DatenstationID, SensortypID) VA
     });
             
 var stmt = db.prepare("INSERT INTO Sensortyp (ID, Name, Einheit) VALUES (?, ?, ?)");
-    for (var i = 1; i <= 10; i++) {
-        stmt.run(i, "Name "+1, "Einheit "+1);
-    }
+    
+	stmt.run(1, "Temperatur", "Celsius");
+	stmt.run(2, "Druck", "Bar");
+    
     stmt.finalize();
     
     db.all("SELECT * FROM Sensortyp", function(err, rows) {
