@@ -1,0 +1,129 @@
+{
+    "request": {
+        "areas": [
+            "2/222",
+            "2/229"
+        ],
+        "sensortype": "temperature",
+        "aggregation": "year",
+        "startdate": "2015-01-01"
+    },
+    "data": {
+        "title": "Monthly Temperature",
+        "timeframes": [
+            "Jan 15",
+            "Feb 15",
+            "Mar 15",
+            "Apr 15",
+            "May 15",
+            "Jun 15",
+            "Jul 15",
+            "Aug 15",
+            "Sep 15",
+            "Oct 15",
+            "Nov 15",
+            "Dec 15"
+        ],
+        "dataPerArea": [
+            {
+                "name": "2/222",
+                "data": [
+                    {
+                        "y": 2.1,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }, {
+                        "y": 2,
+                        "low": -2,
+                        "high": 9
+                    }
+                ]
+            },
+            {
+                "name": "2/223",
+                "data": [
+                    null,
+                    null,
+                    null,
+                    {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }, {
+                        "y": 5,
+                        "low": -3,
+                        "high": 6
+                    }
+                ]
+            }
+        ]
+    }
+}
