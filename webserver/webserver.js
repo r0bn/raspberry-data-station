@@ -128,8 +128,11 @@ app.get('/data', function (req, res) {
 						difference = (difference < 0)?difference + 24 : difference;
 						break;
 					}
-					var value = Number(item["Average"].toPrecision(4));
-					areaDictionary[item.Standort][difference] = value;
+					var dataObject = {};
+					dataObject.y = Number(item["Average"].toPrecision(4));
+					dataObject.low = Number(item["Minimum"].toPrecision(4));
+					dataObject.high = Number(item["Maximum"].toPrecision(4));
+					areaDictionary[item.Standort][difference] = dataObject;
 				});
 				
 				var data = {};
