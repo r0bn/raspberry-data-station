@@ -34,7 +34,7 @@ function getParametersOfSensorComparsion() {
 $('#sensorcomparisonsubmit').click(function() {
     $.ajax({
         type: 'GET',
-        url: '/data',
+        url: '/test.json',
         dataType: 'json',
         data: getParametersOfSensorComparsion(),
         success: function(json) {
@@ -64,15 +64,31 @@ function updateSensorComparison(json) {
     while (chart.series.length > 0)
         chart.series[0].remove(true);
     //add all series to chart
+    var colorid=0;
     json['data']['dataPerArea'].forEach(function(dataPerArea) {
         console.log(dataPerArea);
-        chart.addSeries(dataPerArea);
+        var dataPerAreaAreaRange={type:'arearange',name:dataPerArea.name+" minmax", data: dataPerArea.data,color: Highcharts.getOptions().colors[colorid]};
+        chart.addSeries(dataPerAreaAreaRange);
+        var dataPerAreaSpline={type:'spline',name:dataPerArea.name+" avg", data: dataPerArea.data, likedTo: ":previous",color: Highcharts.getOptions().colors[colorid]};
+        chart.addSeries(dataPerAreaSpline);
+        colorid++;
     });
     //set chart options depending on the sensortype
-    for (var i = 0; i < chart.series.length; i++) {
+    for (var i = 1; i < chart.series.length; i=i+2) {
         chart.series[i].update({
             dashStyle: 'solid',
             lineWidth: 3,
+            tooltip: {
+                valueSuffix: '°C'
+            }
+        });
+    }
+        //set chart options depending on the sensortype
+    for (var i =0; i < chart.series.length; i=i+2) {
+        chart.series[i].update({
+            fillOpacity: 0.2,
+            lineWidth: 0,
+            //linkedTo:':previous',
             tooltip: {
                 valueSuffix: '°C'
             }

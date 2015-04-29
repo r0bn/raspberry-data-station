@@ -1,4 +1,7 @@
-﻿$(function() {
+﻿    Highcharts.setOptions({
+        colors: ['#B15983', '#D47D6A', '#4D9A6A', '#9DC462', '#A374B4', '#8C7CB9'],
+        });
+$(function() {
     $('#chartSensorComparsion').highcharts({
         chart: {
             backgroundColor: null
@@ -6,8 +9,6 @@
         title: {
             text: 'Daily Average Humidity',
         },
-        colors: ['#B15983', '#D47D6A', '#4D9A6A', '#9DC462', '#A374B4', '#8C7CB9'],
-        //colors: ['#8E2F5C', '#AA4C39', '#297B48', '#739D34'],
         xAxis: {
             categories: ['Mo 6.4.', 'Di 6.4.', 'Mi 7.4.', 'Do 8.4.',
                 'Fr 9.4.', 'Sa 10.4.', 'So 11.4.']
