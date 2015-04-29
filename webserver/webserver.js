@@ -25,42 +25,59 @@ app.get('/data', function (req, res) {
 	
 	var finerAggregation;
 	var dateParts = req.query.startdate.split("/");
-	var test = dateParts[2]+"-"+dateParts[1]+"-"+dateParts[0]+" 00:00:00";
-	console.log("startdate: " + test);
-	var startDate = new Date(test);
+	var str = dateParts[2]+"-"+dateParts[1]+"-"+dateParts[0]+" 00:00:00";
+	var startDate = new Date(str);
 	var endDate = new Date(startDate);
 	req.query.areas = req.query.areas.split(",");
-	var areas = req.query.areas;
+	var areas = req.query.areas;   
 	var sensortype = req.query.sensortype;
 	
 	switch(req.query.aggregation) {
     	case "year":
 			title = "Monthly Temperature";
-        	finerAggregation = "month";
+        	finerAggregation = "m";
         	endDate.setFullYear(startDate.getFullYear() + 1); 
         	break;
     	case "month":
 			title = "Daily Temperature";
-        	finerAggregation = "day";
-        	endDate.setDate(startDate.getMonth() + 1);
+        	finerAggregation = "d";
+        	endDate.setMonth(startDate.getMonth() + 1);
         	break;
         case "week":
 			title = "Daily Temperature";
-        	finerAggregation = "day";
+        	finerAggregation = "d";
         	endDate.setDate(startDate.getDate() + 7);
         	break;
         case "day":
 			title = "Hourly Temperature";
-        	finerAggregation = "hour";
+        	finerAggregation = "h";
         	endDate.setDate(startDate.getDate() + 1);
         	break;
 	}
 	
+	console.log("startDate: " + startDate);
 	console.log("endDate: " + endDate);
 	console.log("finerAggregation: " + finerAggregation);
 
-				var rows = dataFile;
-				//var rows = JSON.parse(body);
+	var request = require('request');
+	request({
+    	url: 'http://localhost:3000/query', //URL to hit
+    	method: 'POST',
+    	json: {
+        	areas : areas,
+			sensortype : sensortype,
+			startDate : startDate,
+			endDate : endDate,
+			aggregation : finerAggregation
+    	}
+	}, function(error, response, body){
+    		if(error) {
+        		console.log(error);
+    		} else {
+				
+        		console.log(response.statusCode, body);
+				
+				var rows = body;
 				
 				console.log("starttime: " + startDate);
 				console.log("endtime: " + endDate);
@@ -69,16 +86,16 @@ app.get('/data', function (req, res) {
 				for (var time = new Date (startDate); time < endDate; ) {
 					var timestring = "";
 					switch(finerAggregation) {
-					case "month":
+					case "m":
 						timestring = monthNames[time.getMonth()] + " " + time.getFullYear();
 						time.setMonth(time.getMonth() +1);
 						break;
-					case "day":
-						timestring = time.getDate() + " " + monthNames[time.getMonth()] + " " + time.getFullYear();
+					case "d":
+						timestring = time.getDate() + ". " + monthNames[time.getMonth()] + " " + time.getFullYear();
 						time.setDate(time.getDate() +1);
 						break;
-					case "hour":
-						timestring = time.getHours() + ":" + time.getMinutes() + " " + time.getDate() + " " + monthNames[time.getMonth()] + " " + time.getFullYear();
+					case "h":
+						timestring = time.getHours() + ":" + time.getMinutes() + " " + time.getDate() + ". " + monthNames[time.getMonth()] + " " + time.getFullYear();
 						time.setHours(time.getHours () +1);
 						break;
 					}
@@ -86,27 +103,33 @@ app.get('/data', function (req, res) {
 				};
 				
 				var areaDictionary = [];
-				rows.forEach(function(item) {
-					if (areaDictionary[item.Datenstation]==null){
-						areaDictionary[item.Datenstation] = [];
-						areaDictionary[item]
+				var length = timeframes.length;
+				areas.forEach(function(item) {
+					areaDictionary[item] = [length];
+					for (var i = 0; i < length; i++){
+						areaDictionary[item][i]=null;
 					}
-					var difference = {};
+				});
+				
+				rows.forEach(function(item) {
+					var difference = 0;
 					switch(finerAggregation) {
-					case "month": 
-						difference =  item.Zeitstempel.getMonth -startDate.getMonth
+					case "m": 
+						difference =  item.Timestamp - startDate.getMonth();
 						difference = (difference < 0)?difference + 12 : difference;
 						break;
-					case "day":
-						difference = new Date(item.Zeitstempel) - startDate;
-						difference = difference/86400000;
+					case "d":
+						difference =  item.Timestamp - startDate.getDate();
+						var monthDays = new Date(startDate.getFullYear(), startDate.getMonth()+1, 0).getDate();
+						difference = (difference < 0)?difference + monthDays : difference;
 						break;
-					case "hour":
-						difference = new Date(item.Zeitstempel) - startDate;
-						difference = difference/3600000;
+					case "h":
+						difference =  item.Timestamp - startDate.getHours();
+						difference = (difference < 0)?difference + 24 : difference;
 						break;
 					}
-					areaDictionary[item.Datenstation][difference] = Number(item["avg(Messwert)"]);
+					var value = Number(item["Average"].toPrecision(4));
+					areaDictionary[item.Standort][difference] = value;
 				});
 				
 				var data = {};
@@ -122,7 +145,8 @@ app.get('/data', function (req, res) {
 				var jsonresponse = {};
 				jsonresponse.request = req.query;
 				jsonresponse.data = data;
-				res.json(jsonresponse);	
-				//res.json(jsonfile);
-});
-
+				res.json(jsonresponse);
+			}
+		});
+		
+	});				
