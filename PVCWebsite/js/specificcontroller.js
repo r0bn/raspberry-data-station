@@ -34,7 +34,7 @@ function getParametersOfSensorComparsion() {
 $('#sensorcomparisonsubmit').click(function() {
     $.ajax({
         type: 'GET',
-        url: '/test.json',
+        url: '/data',
         dataType: 'json',
         data: getParametersOfSensorComparsion(),
         success: function(json) {
