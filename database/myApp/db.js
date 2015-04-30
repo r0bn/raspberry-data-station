@@ -66,12 +66,10 @@ app.post('/query', jsonParser, function(req, res){
 		var db = new sqlite3.Database('database.db'); 
 		
 		var areaStr = "";
-		console.log("areastring: "+ areas);
 		for (var i = 0; i <areas.length; i++){
 			if (i!=0) areaStr = areaStr + " OR "
 			areaStr = areaStr + "D.Standort = \""+areas[i]+"\"";
 		}
-		console.log("areastring: "+ areaStr);
 		
 		var query = "SELECT D.Standort, avg(M.Messwert) AS Average, min(M.Messwert)AS Minimum, "+
 					"max(M.Messwert) AS Maximum, strftime(\"%"+aggregation+"\",M.Zeitstempel) AS Timestamp "+

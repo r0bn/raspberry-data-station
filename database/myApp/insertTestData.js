@@ -52,7 +52,7 @@ var stmt = db.prepare("INSERT INTO Sensoren (ID, DatenstationID, SensortypID) VA
             
 var stmt = db.prepare("INSERT INTO Sensortyp (ID, Name, Einheit) VALUES (?, ?, ?)");
     
-	stmt.run(1, "Temperatur", "Celsius");
+	stmt.run(1, "temperature", "Celsius");
 	stmt.run(2, "Druck", "Bar");
     
     stmt.finalize();
