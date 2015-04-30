@@ -34,23 +34,23 @@ app.get('/data', function (req, res) {
 	
 	switch(req.query.aggregation) {
     	case "year":
-			title = "Monthly Temperature";
+			title = "Monthly "+ sensortype;
         	finerAggregation = "m";
         	endDate.setFullYear(startDate.getFullYear() + 1); 
         	break;
     	case "month":
-			title = "Daily Temperature";
+			title = "Daily "+ sensortype;
         	finerAggregation = "d";
         	endDate.setMonth(startDate.getMonth() + 1);
         	break;
         case "week":
-			title = "Daily Temperature";
+			title = "Daily "+sensortype;
         	finerAggregation = "d";
         	endDate.setDate(startDate.getDate() + 7);
         	break;
         case "day":
-			title = "Hourly Temperature";
-        	finerAggregation = "h";
+			title = "Hourly "+sensortype;
+        	finerAggregation = "H";
         	endDate.setDate(startDate.getDate() + 1);
         	break;
 	}
@@ -94,7 +94,7 @@ app.get('/data', function (req, res) {
 						timestring = time.getDate() + ". " + monthNames[time.getMonth()] + " " + time.getFullYear();
 						time.setDate(time.getDate() +1);
 						break;
-					case "h":
+					case "H":
 						timestring = time.getHours() + ":" + time.getMinutes() + " " + time.getDate() + ". " + monthNames[time.getMonth()] + " " + time.getFullYear();
 						time.setHours(time.getHours () +1);
 						break;
@@ -123,7 +123,7 @@ app.get('/data', function (req, res) {
 						var monthDays = new Date(startDate.getFullYear(), startDate.getMonth()+1, 0).getDate();
 						difference = (difference < 0)?difference + monthDays : difference;
 						break;
-					case "h":
+					case "H":
 						difference =  item.Timestamp - startDate.getHours();
 						difference = (difference < 0)?difference + 24 : difference;
 						break;
