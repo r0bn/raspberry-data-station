@@ -115,7 +115,7 @@ app.get('/data', function (req, res) {
 					var difference = 0;
 					switch(finerAggregation) {
 					case "m": 
-						difference =  item.Timestamp - startDate.getMonth();
+						difference =  item.Timestamp - (startDate.getMonth()+1);
 						difference = (difference < 0)?difference + 12 : difference;
 						break;
 					case "d":
