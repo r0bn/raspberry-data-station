@@ -60,10 +60,12 @@
    },
    "sensortypes":{
        "ST947SH65":{
-           "description":"humidity"
+           "description":"humidity",
+           "unit":"°C"
        },
        "ST9ZUIOZZ":{
-           "description":"temperature"
+           "description":"temperature",
+           "unit":"%"
        }
    }
 }
