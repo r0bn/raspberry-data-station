@@ -15,6 +15,23 @@ var server = app.listen(7085, function () {
 
 app.use(express.static(path.resolve(__dirname +'/../PVCWebsite')));
 
+app.get('/init', function (req, res) {
+	var array = [];
+	
+	var request = require('request');
+	request('http://localhost:3000/sensor', function (error, response, body) {
+	if (!error && response.statusCode == 200) {
+		array.push.apply(array, body);
+	}
+	
+	request('http://localhost:3000/standorte', function (error, response, body) {
+	if (!error && response.statusCode == 200) {
+		array.push.apply(array, body);
+	}
+	console.log(array);
+	res.json(array);
+})
+}
 
 app.get('/data', function (req, res) {
 	
