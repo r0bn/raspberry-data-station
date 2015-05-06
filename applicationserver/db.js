@@ -53,13 +53,18 @@ app.post('/query', jsonParser, function(req, res){
     	/*
     		Expect POST-Request with properties:
     		{
-  				"Areas":[],
-  				"Sensortype":"",
-  				"StartDate":"",
-  				"EndDate":"",
-			  	"Aggregation":""
+  				"Areas": [Array of Strings],
+  				"Sensortype": (String),
+  				"StartDate": (String),
+  				"EndDate": (String),
+			  	"Aggregation": (String)
 			}
     		
+    		Time-Format: 	YYYY-MM-DD HH:mm:ss
+    		Example:		2015-05-06 00:00:00 (for StartDate and EndDate)
+    		
+    		Aggregation-Format: "Y" (Year) or "m" (Month) or "d" (Day) 
+    							or H" (Hour) or "M" (Minute) or "S" (Millisecond)
     	*/
     	
     	var areas, sensortype, startDate, endDate, aggregation;
@@ -128,12 +133,12 @@ app.post('/query', jsonParser, function(req, res){
 		//console.log("areastring: "+ areaStr);
 		
 		var query = "SELECT D.Area, avg(M.Value) AS Average, min(M.Value)AS Minimum, "+
-					"max(M.Value) AS Maximum, strftime(\"%"+aggregation+"\",M.Timestamp) AS Timestamp "+
+					"max(M.Value) AS Maximum, strftime(\"%Y-%m-%d %H:%M:%S\",M.Timestamp) AS Timestamp "+
 					"FROM Data AS M "+
 					"JOIN Sensors AS SE ON SE.ID = M.SensorID "+
 					"JOIN Datastations AS D ON SE.DatastationID = D.ID "+
 					"JOIN Sensortype AS ST ON SE.SensortypeID = ST.ID "+
-					"WHERE strftime(\"%Y-%m-%d\", M.Timestamp) "+
+					"WHERE strftime(\"%Y-%m-%d %H%M%S\", M.Timestamp) "+
 					"BETWEEN \""+startDate+"\" "+ 
 					"AND \""+endDate+"\" "+
 					"AND (" + areaStr + ") "+
@@ -166,12 +171,12 @@ app.post('/insert', jsonParser, function(req, res){
          /*
     		Expect POST-Request with properties:
     		{
-  				"DatastationID":"",
-  				"Timestamp":"",
-	  			"Value":"",
-  				"Sensortype":"",
-  				"Area":"",
-  				"Unit":""
+  				"DatastationID": (Integer),
+  				"Timestamp": (String),
+	  			"Value": (String),
+  				"Sensortype": (String),
+  				"Area": (String),
+  				"Unit": (String)
 			}
     		
     		Timestamp-Format: 	YYYY-MM-DD HH:mm:ss
