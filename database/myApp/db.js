@@ -6,57 +6,111 @@ var app = express();
 //app.use(bodyParser.json());
 var jsonParser = bodyParser.json()
 
+//Send all Datastations
+app.get('/allDatastations', function(req, res){
+	
+	var sqlite3 = require('sqlite3').verbose();
+	var db = new sqlite3.Database('database.db');
+	
+	var resultObj = [];
+	db.each("SELECT * FROM Datastations", 
+			function (err, row){
+				//console.log(row);
+				resultObj.push(row);
+			},
+			function(err, numberOfRows){
+				//console.log(resultObj);
+				//res.send(resultObj);
+				res.send(JSON.stringify(resultObj));
+			});
+
+})
+
+//Send all Sensortypes
+app.get('/allSensortypes', function(req, res){
+	
+	var sqlite3 = require('sqlite3').verbose();
+	var db = new sqlite3.Database('database.db');
+	
+	var resultObj = [];
+	db.each("SELECT * FROM Sensortype", 
+			function (err, row){
+				//console.log(row);
+				resultObj.push(row);
+			},
+			function(err, numberOfRows){
+				//console.log(resultObj);
+				//res.send(resultObj);
+				res.send(JSON.stringify(resultObj));
+			});
+
+})
+
 //Execute a received query and send the result back 
 app.post('/query', jsonParser, function(req, res){
     
-    	var areas, sensortype, startDate, endDate, aggregation;
     
-        if("areas" in req.body)
+    	/*
+    		Expect POST-Request with properties:
+    		{
+  				"Areas":[],
+  				"Sensortype":"",
+  				"StartDate":"",
+  				"EndDate":"",
+			  	"Aggregation":""
+			}
+    		
+    	*/
+    	
+    	var areas, sensortype, startDate, endDate, aggregation;
+    	
+    	//console.log(req.body);
+        if("Areas" in req.body)
         {
-        	areas = req.body.areas;
+        	areas = req.body.Areas;
         }
         else
         {
-        	console.log("Fehlender Parameter areas");
-         	res.send(500);
-         	return;
-        }
-        if("sensortype" in req.body)
-        {
-        	sensortype = req.body.sensortype;
-        }
-        else
-        {
-        	console.log("Fehlender Parameter sensortype");
-         	res.sendStatus(500);
-        }
-        if("startDate" in req.body)
-        {
-        	startDate = req.body.startDate;
-        }
-        else
-        {
-        	console.log("Fehlender Parameter startDate");
+        	console.log("Missing parameter Areas");
          	res.sendStatus(500);
          	return;
         }
-        if("endDate" in req.body)
+        if("Sensortype" in req.body)
         {
-        	endDate = req.body.endDate;
+        	sensortype = req.body.Sensortype;
         }
         else
         {
-        	console.log("Fehlender Parameter endDate");
+        	console.log("Missing parameter Sensortype");
+         	res.sendStatus(500);
+        }
+        if("StartDate" in req.body)
+        {
+        	startDate = req.body.StartDate;
+        }
+        else
+        {
+        	console.log("Missing parameter StartDate");
          	res.sendStatus(500);
          	return;
         }
-        if("aggregation" in req.body)
+        if("EndDate" in req.body)
         {
-        	aggregation = req.body.aggregation;
+        	endDate = req.body.EndDate;
         }
         else
         {
-        	console.log("Fehlender Parameter aggregation");
+        	console.log("Missing parameter EndDate");
+         	res.sendStatus(500);
+         	return;
+        }
+        if("Aggregation" in req.body)
+        {
+        	aggregation = req.body.Aggregation;
+        }
+        else
+        {
+        	console.log("Missing parameter Aggregation");
          	res.sendStatus(500);
          	return;
         }
@@ -65,28 +119,29 @@ app.post('/query', jsonParser, function(req, res){
         var sqlite3 = require('sqlite3').verbose();
 		var db = new sqlite3.Database('database.db'); 
 		
-		var areaStr = "";
-		console.log("areastring: "+ areas);
-		for (var i = 0; i <areas.length; i++){
-			if (i!=0) areaStr = areaStr + " OR "
-			areaStr = areaStr + "D.Standort = \""+areas[i]+"\"";
+		var areaStr = "D.Area = \""+areas[0]+"\"";
+		//console.log("areastring: "+ areaStr);
+		for (var i = 1; i <areas.length; i++){
+			areaStr = areaStr + " OR ";
+			areaStr = areaStr + "D.Area = \""+areas[i]+"\"";
 		}
-		console.log("areastring: "+ areaStr);
+		//console.log("areastring: "+ areaStr);
 		
-		var query = "SELECT D.Standort, avg(M.Messwert) AS Average, min(M.Messwert)AS Minimum, "+
-					"max(M.Messwert) AS Maximum, strftime(\"%"+aggregation+"\",M.Zeitstempel) AS Timestamp "+
-					"FROM Messwerte AS M "+
-					"JOIN Sensoren AS SE ON SE.ID = M.SensorID "+
-					"JOIN Datenstationen AS D ON SE.DatenstationID = D.ID "+
-					"JOIN Sensortyp AS ST ON SE.SensortypID = ST.ID "+
-					"WHERE strftime(\"%Y-%m-%d\", M.Zeitstempel) "+
+		var query = "SELECT D.Area, avg(M.Value) AS Average, min(M.Value)AS Minimum, "+
+					"max(M.Value) AS Maximum, strftime(\"%"+aggregation+"\",M.Timestamp) AS Timestamp "+
+					"FROM Data AS M "+
+					"JOIN Sensors AS SE ON SE.ID = M.SensorID "+
+					"JOIN Datastations AS D ON SE.DatastationID = D.ID "+
+					"JOIN Sensortype AS ST ON SE.SensortypeID = ST.ID "+
+					"WHERE strftime(\"%Y-%m-%d\", M.Timestamp) "+
 					"BETWEEN \""+startDate+"\" "+ 
 					"AND \""+endDate+"\" "+
 					"AND (" + areaStr + ") "+
 					"AND ST.Name = \""+sensortype+"\" "+
-					"GROUP BY D.Standort, "+
-					"strftime(\"%"+aggregation+"\", M.Zeitstempel)";
+					"GROUP BY D.Area, "+
+					"strftime(\"%"+aggregation+"\", M.Timestamp)";
 		
+		//console.log(query);
 		
 		var resultObj = [];
 		db.each(query, 
@@ -102,65 +157,93 @@ app.post('/query', jsonParser, function(req, res){
 })
 
 //Global variables
-var Zeitstempel;
-var Messwert;
+var timestamp;
+var value;
 
+//Insert new values into the database
 app.post('/insert', jsonParser, function(req, res){
          
-         var DatenstationID;
-         var Sensortyp; 
+         /*
+    		Expect POST-Request with properties:
+    		{
+  				"DatastationID":"",
+  				"Timestamp":"",
+	  			"Value":"",
+  				"Sensortype":"",
+  				"Area":"",
+  				"Unit":""
+			}
+    		
+    		Timestamp-Format: 	YYYY-MM-DD HH:mm:ss
+    		Example:			2015-04-01 00:00:00
+    	*/
+         
+         var datastationID;
+         var area;
+         var unit;
+         var sensortype; 
          
          //console.log(req.body);
          
          //Check if required values are available
-         if("DatenstationID" in req.body)
+         if("DatastationID" in req.body)
          {
-         	DatenstationID = req.body.DatenstationID;
+         	datastationID = req.body.DatastationID;
          }
          else
          {
-         	console.log("Fehlender Parameter DatenstationID");
+         	console.log("Missing parameter DatastationID");
          	res.sendStatus(500);
          	return;
          	
          }
-         if("Zeitstempel" in req.body)
+         if("Timestamp" in req.body)
          {
-         	Zeitstempel = req.body.Zeitstempel;
+         	timestamp = req.body.Timestamp;
          }
          else
          {
-         	console.log("Fehlender Parameter Zeitstempel");
+         	console.log("Missing parameter Timestamp");
          	res.sendStatus(500);
          	return;
          }
-         if("Messwert" in req.body)
+         if("Value" in req.body)
          {
-         	Messwert = req.body.Messwert;
-         	//console.log(Messwert);
+         	value = req.body.Value;
          }
          else
          {
-         	console.log("Fehlender Parameter Messwert");
+         	console.log("Missing parameter Value");
          	res.sendStatus(500);
          	return;
          }
-         // if("SensorID" in req.body)
-//          {
-//          	SensorID = req.body.SensorID;
-//          }
-//          else
-//          {
-//          	console.log("Fehlender Parameter SensorID");
-//          	res.sendStatus(500);
-//          }
-         if("Sensortyp" in req.body)
+         if("Sensortype" in req.body)
          {
-         	Sensortyp = req.body.Sensortyp;
+         	sensortype = req.body.Sensortype;
          }
          else
          {
-         	console.log("Fehlender Parameter Sensortyp");
+         	console.log("Missing parameter Sensortype");
+         	res.sendStatus(500);
+         	return;
+         }
+         if("Area" in req.body)
+         {
+         	area = req.body.Area;
+         }
+         else
+         {
+         	console.log("Missing parameter Area");
+         	res.sendStatus(500);
+         	return;
+         }
+         if("Unit" in req.body)
+         {
+         	unit = req.body.Unit;
+         }
+         else
+         {
+         	console.log("Missing parameter Unit");
          	res.sendStatus(500);
          	return;
          }
@@ -170,79 +253,79 @@ app.post('/insert', jsonParser, function(req, res){
 		var db = new sqlite3.Database('database.db');   
          
         //Insert data into database and begin with the datastation
-        insertDatastation(db, DatenstationID, Sensortyp);
+        insertDatastation(db, datastationID, sensortype, area, unit);
         
         //Send status code 200
         res.sendStatus(200); 
 })
 
-function insertDatastation(db, DatenstationID, Sensortyp){
+function insertDatastation(db, datastationID, sensortype, area, unit){
 	//Check if the datastation exists 
-	db.get("SELECT * FROM Datenstationen WHERE ID=?", DatenstationID, function(err, row) {
+	db.get("SELECT * FROM Datastations WHERE ID=?", datastationID, function(err, row) {
 		if(row == undefined){
 			//console.log(row);
-			db.run("INSERT INTO Datenstationen (ID, Standort) VALUES (?, ?)", DatenstationID, "Hft",
+			db.run("INSERT INTO Datastations (ID, Area) VALUES (?, ?)", datastationID, area,
 			function(err){
-				console.log("Insert datastation: "+this.lastID);
-				insertSensortype(db, DatenstationID, Sensortyp);
+				console.log("Insert Datastation: "+this.lastID);
+				insertSensortype(db, datastationID, sensortype, unit);
 			});
 		}
 		else{
-			insertSensortype(db, DatenstationID, Sensortyp);
+			insertSensortype(db, datastationID, sensortype, unit);
 		}
 	});
 }
 
-function insertSensortype(db, DatenstationID, Sensortyp){
+function insertSensortype(db, datastationID, sensortype, unit){
 	//Check if sensortype exists
-	db.get("SELECT * FROM Sensortyp WHERE Name=?", Sensortyp, function(err, row) {
+	db.get("SELECT * FROM Sensortype WHERE Name=?", sensortype, function(err, row) {
 		if(row == undefined){
-			db.get("SELECT max(ID) AS ID FROM Sensortyp", function(err, row){
+			db.get("SELECT max(ID) AS ID FROM Sensortype", function(err, row){
 				if(row.ID == null) row.ID = 0;
 					var ID = parseInt(row.ID)+1; 
-					db.run("INSERT INTO Sensortyp (ID, Name, Einheit) VALUES (?, ?, ?)", ID, 
-					Sensortyp, "Einheit", function(err){
-						console.log("Insert sensortype: "+this.lastID)
-						insertSensor(db, DatenstationID, this.lastID);
+					db.run("INSERT INTO Sensortype (ID, Name, Unit) VALUES (?, ?, ?)", ID, 
+					sensortype, unit, function(err){
+						console.log("Insert Sensortype: "+this.lastID)
+						insertSensor(db, datastationID, this.lastID);
 					});
 			});	
 		}
 		else{
-			insertSensor(db, DatenstationID, row.ID);
+			insertSensor(db, datastationID, row.ID);
 		}
 	});
 }
 
-function insertSensor(db, DatenstationID, SensortypID){
+function insertSensor(db, datastationID, sensortypID){
 	//Check if sensor exists
-	db.get("SELECT * FROM Sensoren WHERE DatenstationID=? AND SensortypID=?", DatenstationID, SensortypID,
+	db.get("SELECT * FROM Sensors WHERE DatastationID=? AND SensortypeID=?", datastationID, sensortypID,
 		function(err, row) {
 			if(row == undefined){
-				db.get("SELECT max(ID) AS ID FROM Sensoren", function(err, row){
+				db.get("SELECT max(ID) AS ID FROM Sensors", function(err, row){
 					if(row.ID == null) row.ID = 0;
 					var ID = parseInt(row.ID)+1; 
-					db.run("INSERT INTO Sensoren (ID, DatenstationID, SensortypID) VALUES (?, ?, ?)", 
-					ID, DatenstationID, SensortypID, function(err){
+					db.run("INSERT INTO Sensors (ID, DatastationID, SensortypeID) VALUES (?, ?, ?)", 
+					ID, datastationID, sensortypID, function(err){
 						console.log("Insert sensor: "+this.lastID);
-						insertMeasuredData(db, Zeitstempel, this.lastID, Messwert)
+						insertMeasuredData(db, timestamp, this.lastID, value)
 					});
 				});	
 			}
 			else{
-				insertMeasuredData(db, Zeitstempel, row.ID, Messwert)
+				insertMeasuredData(db, timestamp, row.ID, value)
 			}		
 		});
 }
 
-function insertMeasuredData(db, Zeitstempel, SensorID, Messwert){
-	//Insert values into Table Messwerte 
-	db.get("SELECT * FROM Messwerte WHERE Zeitstempel=? AND SensorID=? AND Messwert=?", Zeitstempel, SensorID, Messwert, function(err, row) {
+function insertMeasuredData(db, timestamp, sensorID, value){
+	//Insert values into Table Data 
+	db.get("SELECT * FROM Data WHERE Timestamp=? AND SensorID=? AND Value=?", timestamp, sensorID, value, function(err, row) {
 		if(row == undefined){
-			db.get("SELECT max(ID) AS ID FROM Messwerte", function(err, row){
+			db.get("SELECT max(ID) AS ID FROM Data", function(err, row){
 				if(row.ID == null) row.ID = 0; 
 				var ID = parseInt(row.ID)+1; 
-				db.run("INSERT INTO Messwerte (ID, Zeitstempel, SensorID, Messwert) VALUES (?, ?, ?, ?)", 
-				ID, Zeitstempel, SensorID, Messwert, function(err){
+				db.run("INSERT INTO Data (ID, Timestamp, SensorID, Value) VALUES (?, ?, ?, ?)", 
+				ID, timestamp, sensorID, value, function(err){
 					console.log("Insert measure data: "+this.lastID);
 				});
 			});	

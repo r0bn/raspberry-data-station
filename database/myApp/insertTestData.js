@@ -4,21 +4,21 @@
  
  db.serialize(function() {
 
-var stmt = db.prepare("INSERT INTO Datenstationen (ID, Standort) VALUES (?, ?)");
+var stmt = db.prepare("INSERT INTO Datastations (ID, Area) VALUES (?, ?)");
     var area = "1/11";
     for (var i = 1; i <= 2; i++) {
         stmt.run(i, area+i);
     }
     stmt.finalize();
     
-    db.all("SELECT * FROM Datenstationen", function(err, rows) {
-    	console.log("TABLE Datenstationen (ID, Standort)");
+    db.all("SELECT * FROM Datastations", function(err, rows) {
+    	console.log("TABLE Datastations (ID, Area)");
         for(var i=0;i<rows.length;i++){
-        	console.log(rows[i].ID + " : "+rows[i].Standort);
+        	console.log(rows[i].ID + " : "+rows[i].Area);
         }
     });
     
-var stmt = db.prepare("INSERT INTO Messwerte (ID, Zeitstempel, SensorID, Messwert) VALUES (?, ?, ?, ?)");
+var stmt = db.prepare("INSERT INTO Data (ID, Timestamp, SensorID, Value) VALUES (?, ?, ?, ?)");
     var time = "2015-04-0";
     var sensorID = 1;
     for (var i = 1; i < 10; i++) {
@@ -29,38 +29,38 @@ var stmt = db.prepare("INSERT INTO Messwerte (ID, Zeitstempel, SensorID, Messwer
     }
     stmt.finalize();
     
-    db.all("SELECT * FROM Messwerte", function(err, rows) {
-    	console.log("TABLE Messwerte (ID, Zeitstempel, SensorID, Messwert)");
+    db.all("SELECT * FROM Data", function(err, rows) {
+    	console.log("TABLE Data (ID, Timestamp, SensorID, Value)");
         for(var i=0;i<rows.length;i++){
-        	console.log(rows[i].ID + " : "+rows[i].Zeitstempel+ " : "+rows[i].SensorID+" : "+rows[i].Messwert);
+        	console.log(rows[i].ID + " : "+rows[i].Timestamp+ " : "+rows[i].SensorID+" : "+rows[i].Value);
         }
     });
 
-var stmt = db.prepare("INSERT INTO Sensoren (ID, DatenstationID, SensortypID) VALUES (?, ?, ?)");
+var stmt = db.prepare("INSERT INTO Sensors (ID, DatastationID, SensortypeID) VALUES (?, ?, ?)");
     
     for (var i = 1; i <= 2; i++) {
         stmt.run(i, i, i);
     }
     stmt.finalize();
     
-    db.all("SELECT * FROM Sensoren", function(err, rows) {
-    	console.log("TABLE Sensoren (ID, DatenstationID, SensortypID)")
+    db.all("SELECT * FROM Sensors", function(err, rows) {
+    	console.log("TABLE Sensors (ID, DatastationID, SensortypeID)")
         for(var i=0;i<rows.length;i++){
-        	console.log(rows[i].ID + " : "+rows[i].DatenstationID+ " : "+rows[i].SensortypID);
+        	console.log(rows[i].ID + " : "+rows[i].DatastationID+ " : "+rows[i].SensortypeID);
         }
     });
             
-var stmt = db.prepare("INSERT INTO Sensortyp (ID, Name, Einheit) VALUES (?, ?, ?)");
+var stmt = db.prepare("INSERT INTO Sensortype (ID, Name, Unit) VALUES (?, ?, ?)");
     
-	stmt.run(1, "Temperatur", "Celsius");
-	stmt.run(2, "Druck", "Bar");
+	stmt.run(1, "Temperature", "Celsius");
+	stmt.run(2, "Pressure", "Bar");
     
     stmt.finalize();
     
-    db.all("SELECT * FROM Sensortyp", function(err, rows) {
-    	console.log("TABLE Sensortyp (ID, Name, Einheit)");
+    db.all("SELECT * FROM Sensortype", function(err, rows) {
+    	console.log("TABLE Sensortype (ID, Name, Unit)");
         for(var i=0;i<rows.length;i++){
-        	console.log(rows[i].ID + " : "+rows[i].Name+ " : "+rows[i].Einheit);
+        	console.log(rows[i].ID + " : "+rows[i].Name+ " : "+rows[i].Unit);
         }
     });
       
