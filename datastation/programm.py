@@ -5,10 +5,13 @@ import re
 import time
 import json
 import urllib2
+import calendar
+from datetime import datetime
 
 # TODO: Move to config file
 path = "/sys/bus/w1/devices/10-000802b56552/w1_slave"
-url = "http://pvc.r9u.de" 
+url = "http://pvc.r9u.de:7090" 
+#url = "http://0.0.0.0:3000/insert" 
 
 # read and parse sensor data file
 def read_sensor(path):
@@ -28,13 +31,18 @@ def read_sensor(path):
 
 def send_json(value):
     req = urllib2.Request(url)
-    data = {'temp': str(value)}
+    data = {
+            'DatenstationID': 'raspOne',
+            'Zeitstempel': 'utc',
+            'Messwert' : str(value),
+            'Sensortyp' : 'temperatur',
+            }
     req.add_header('Content-Type', 'application/json')
+    print data
     response = urllib2.urlopen(req, json.dumps(data))
 
 # main
 data = "N"
 data = read_sensor(path)
 send_json(data)
-print data
 time.sleep(1)
