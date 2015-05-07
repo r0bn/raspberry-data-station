@@ -16,22 +16,27 @@ var server = app.listen(7085, function () {
 app.use(express.static(path.resolve(__dirname +'/../PVCWebsite')));
 
 app.get('/init', function (req, res) {
-	var array = [];
 	
 	var request = require('request');
-	request('http://localhost:3000/sensor', function (error, response, body) {
-	if (!error && response.statusCode == 200) {
-		array.push.apply(array, body);
-	}
+	var jsonresponse = {};
 	
-	request('http://localhost:3000/standorte', function (error, response, body) {
+	request('http://localhost:3000/allDatastations', function (error, response, body) {
 	if (!error && response.statusCode == 200) {
-		array.push.apply(array, body);
+		var datastations = JSON.parse(body);
+		jsonresponse.datastations = datastations;
+		
+		request('http://localhost:3000/allSensortypes', function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			var sensortypes = JSON.parse(body);
+			jsonresponse.sensortypes = sensortypes;
+			
+			res.json(jsonresponse);
+		}
+	});
 	}
-	console.log(array);
-	res.json(array);
-})
-}
+	});
+});
+
 
 app.get('/data', function (req, res) {
 	
@@ -81,11 +86,11 @@ app.get('/data', function (req, res) {
     	url: 'http://localhost:3000/query', //URL to hit
     	method: 'POST',
     	json: {
-        	areas : areas,
-			sensortype : sensortype,
-			startDate : startDate,
-			endDate : endDate,
-			aggregation : finerAggregation
+        	Areas : areas,
+			Sensortype : sensortype,
+			StartDate : startDate,
+			EndDate : endDate,
+			Aggregation : finerAggregation
     	}
 	}, function(error, response, body){
     		if(error) {
@@ -132,24 +137,25 @@ app.get('/data', function (req, res) {
 					var difference = 0;
 					switch(finerAggregation) {
 					case "m": 
-						difference =  item.Timestamp - (startDate.getMonth()+1);
+						difference =  new Date(item.Timestamp).getMonth() - (startDate.getMonth());
 						difference = (difference < 0)?difference + 12 : difference;
 						break;
 					case "d":
-						difference =  item.Timestamp - startDate.getDate();
+						difference =  new Date(item.Timestamp).getDate() - startDate.getDate();
 						var monthDays = new Date(startDate.getFullYear(), startDate.getMonth()+1, 0).getDate();
 						difference = (difference < 0)?difference + monthDays : difference;
 						break;
 					case "H":
-						difference =  item.Timestamp - startDate.getHours();
+						difference =  new Date(item.Timestamp).getHours() - startDate.getHours();
 						difference = (difference < 0)?difference + 24 : difference;
 						break;
 					}
+					
 					var dataObject = {};
 					dataObject.y = Number(item["Average"].toPrecision(4));
 					dataObject.low = Number(item["Minimum"].toPrecision(4));
 					dataObject.high = Number(item["Maximum"].toPrecision(4));
-					areaDictionary[item.Standort][difference] = dataObject;
+					areaDictionary[item.Area][difference] = dataObject;
 				});
 				
 				var data = {};
