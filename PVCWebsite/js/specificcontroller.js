@@ -48,42 +48,17 @@ function initDatastationsAndSensortypes(json) {
         selectrooms.selectpicker('refresh');
 
         $.each(json['datastations'], function(i, v) {
-            selectrooms.append("<option value=" + v['Area'] + ">" + v['Area'] + "</option>");
+            selectrooms.append("<option value=" + v['ID'] + ">" + v['Area'] + "</option>");
             selectrooms.selectpicker('refresh');
         });
         
         
         //select first  (SENSORCOMPARISON EXTRA)
         if(json['datastations'].length===1)
-        selectrooms.selectpicker('val', [json['datastations'][0]['Area']]);
+        selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
         if(json['datastations'].length>1)
-        selectrooms.selectpicker('val', [json['datastations'][0]['Area'],json['datastations'][1]['Area']]);
+        selectrooms.selectpicker('val', [json['datastations'][0]['ID'],json['datastations'][1]['ID']]);
         
-        //SENSORTYPES
-        //first remove old options
-        var selectsensortypes = sensorcomparison.find('#sensortype select');
-        selectsensortypes.find('option').remove();
-        selectsensortypes.selectpicker('refresh');
-
-        $.each(json['sensortypes'], function(i, v) {
-            selectsensortypes.append("<option value=" + v['Name'] + ">" + v['Name'] + "</option>");
-            selectsensortypes.selectpicker('refresh');
-        });
-        
-        //TIMESPANCOMPARISON
-        var sensorcomparison = $('#timespancomparison');
-
-        //ROOMS
-        //first remove old options
-        var selectrooms = sensorcomparison.find('#rooms select');
-        selectrooms.find('option').remove();
-        selectrooms.selectpicker('refresh');
-
-        $.each(json['datastations'], function(i, v) {
-            selectrooms.append("<option value=" + v['Area'] + ">" + v['Area'] + "</option>");
-            selectrooms.selectpicker('refresh');
-        });
-
         //SENSORTYPES
         //first remove old options
         var selectsensortypes = sensorcomparison.find('#sensortype select');
@@ -93,7 +68,32 @@ function initDatastationsAndSensortypes(json) {
         $.each(json['sensortypes'], function(i, v) {
             selectsensortypes.append("<option value=" + v['ID'] + ">" + v['Name'] + "</option>");
             selectsensortypes.selectpicker('refresh');
-        });     
+        });
+        
+//        //TIMESPANCOMPARISON
+//        var sensorcomparison = $('#timespancomparison');
+//
+//        //ROOMS
+//        //first remove old options
+//        var selectrooms = sensorcomparison.find('#rooms select');
+//        selectrooms.find('option').remove();
+//        selectrooms.selectpicker('refresh');
+//
+//        $.each(json['datastations'], function(i, v) {
+//            selectrooms.append("<option value=" + v['Area'] + ">" + v['Area'] + "</option>");
+//            selectrooms.selectpicker('refresh');
+//        });
+//
+//        //SENSORTYPES
+//        //first remove old options
+//        var selectsensortypes = sensorcomparison.find('#sensortype select');
+//        selectsensortypes.find('option').remove();
+//        selectsensortypes.selectpicker('refresh');
+//
+//        $.each(json['sensortypes'], function(i, v) {
+//            selectsensortypes.append("<option value=" + v['ID'] + ">" + v['Name'] + "</option>");
+//            selectsensortypes.selectpicker('refresh');
+//        });     
     }
 }
 
