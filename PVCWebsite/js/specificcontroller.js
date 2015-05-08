@@ -119,11 +119,11 @@ function getParametersOfSensorComparsion() {
     $.each($('#sensorcomparison #rooms option:selected'), function(i, v) {
         arr[i] = v['value'];
     });
-    var areas = arr.toString();
+    var datastations = arr.toString();
     var sensortype = $('#sensorcomparison #sensortype option:selected').val();
-    var aggregation = $('#sensorcomparison #aggregation .active input').val();
+    var timespan = $('#sensorcomparison #aggregation .active input').val();
     var startdate = $('#datepicker1').val();
-    return {'areas': areas, 'sensortype': sensortype, 'aggregation': aggregation, 'startdate': startdate};
+    return {'datastationID': datastations, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate};
 }
 
 
