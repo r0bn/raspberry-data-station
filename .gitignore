@@ -1,3 +1,7 @@
 node_modules/
 **/node_modules/
 /nbproject/private/
+
+database/myApp/insertTestData.js
+
+database/myApp/db.js
