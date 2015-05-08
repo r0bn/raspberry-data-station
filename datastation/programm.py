@@ -10,7 +10,7 @@ from datetime import datetime
 
 # TODO: Move to config file
 path = "/sys/bus/w1/devices/10-000802b56552/w1_slave"
-url = "http://pvc.r9u.de:7090" 
+url = "http://pvc.r9u.de:7090/insert" 
 #url = "http://0.0.0.0:3000/insert" 
 
 # read and parse sensor data file
