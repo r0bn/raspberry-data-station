@@ -1,0 +1,11 @@
+{
+    "development" : {
+        "applicationserver" : {
+            "port" : 7090 
+
+        },
+        "webserver" : {
+            "port" : 7085 
+        }
+    }
+}

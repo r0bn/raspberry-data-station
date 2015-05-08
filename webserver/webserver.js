@@ -3,8 +3,9 @@ var app = express();
 var jsonfile= require(__dirname + "/dummydata.json");
 var dataFile= require(__dirname + "/dataFile.json");
 var path = require('path')
+var config = require(__dirname +'/../config.json')
 
-var server = app.listen(7085, function () {
+var server = app.listen(config.development.webserver.port, function () {
 
   var host = server.address().address;
   var port = server.address().port;
@@ -20,12 +21,12 @@ app.get('/init', function (req, res) {
 	var request = require('request');
 	var jsonresponse = {};
 	
-	request('http://localhost:3000/allDatastations', function (error, response, body) {
+	request('http://localhost:'+config.development.applicationserver.port+'/allDatastations', function (error, response, body) {
 	if (!error && response.statusCode == 200) {
 		var datastations = JSON.parse(body);
 		jsonresponse.datastations = datastations;
 		
-		request('http://localhost:3000/allSensortypes', function (error, response, body) {
+		request('http://localhost:'+config.development.applicationserver.port+'/allSensortypes', function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			var sensortypes = JSON.parse(body);
 			jsonresponse.sensortypes = sensortypes;
@@ -83,7 +84,7 @@ app.get('/data', function (req, res) {
 
 	var request = require('request');
 	request({
-    	url: 'http://localhost:3000/query', //URL to hit
+    	url: 'http://localhost:'+ config.development.applicationserver.port+'/query', //URL to hit
     	method: 'POST',
     	json: {
         	Areas : areas,

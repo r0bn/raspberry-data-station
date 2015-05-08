@@ -1,6 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+var config = require(__dirname +'/../config.json')
+
 
 
 //app.use(bodyParser.json());
@@ -338,7 +340,7 @@ function insertMeasuredData(db, timestamp, sensorID, value){
 	}); 
 }
 
-var server = app.listen(3000, function(){
+var server = app.listen(config.development.applicationserver.port, function(){
                         
     var host = server.address().address;
     var port = server.address().port;

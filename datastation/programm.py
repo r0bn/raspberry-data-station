@@ -32,10 +32,12 @@ def read_sensor(path):
 def send_json(value):
     req = urllib2.Request(url)
     data = {
-            'DatenstationID': 'raspOne',
-            'Zeitstempel': 'utc',
-            'Messwert' : str(value),
-            'Sensortyp' : 'temperatur',
+            'DatenstationID': ,
+            'Zeitstempel': datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),
+            'Value' : str(value),
+            'Sensortype' : 'temperatur',
+            'Area' : 'RobWG',
+            'Unit' : 'Grad'
             }
     req.add_header('Content-Type', 'application/json')
     print data
