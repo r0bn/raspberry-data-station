@@ -144,14 +144,14 @@ function updateSensorComparison(json) {
     var colorid = 0;
     json['data']['dataPerArea'].forEach(function(dataPerArea) {
         console.log(dataPerArea);
-        var dataPerAreaAreaRange = {type: 'arearange', name: dataPerArea.name + " minmax", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
-        chart.addSeries(dataPerAreaAreaRange);
-        var dataPerAreaSpline = {type: 'spline', name: dataPerArea.name + " avg", data: dataPerArea.data, likedTo: ":previous", color: Highcharts.getOptions().colors[colorid]};
+        var dataPerAreaSpline = {type: 'spline', name: dataPerArea.name + " avg", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaSpline);
+        var dataPerAreaAreaRange = {type: 'areasplinerange', name: dataPerArea.name + " minmax", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
+        chart.addSeries(dataPerAreaAreaRange);
         colorid++;
     });
     //set chart options depending on the sensortype
-    for (var i = 1; i < chart.series.length; i = i + 2) {
+    for (var i = 0; i < chart.series.length; i = i + 2) {
         chart.series[i].update({
             dashStyle: 'solid',
             lineWidth: 3,
@@ -161,11 +161,11 @@ function updateSensorComparison(json) {
         });
     }
     //set chart options depending on the sensortype
-    for (var i = 0; i < chart.series.length; i = i + 2) {
+    for (var i = 1; i < chart.series.length; i = i + 2) {
         chart.series[i].update({
             fillOpacity: 0.2,
             lineWidth: 0,
-            //linkedTo:':previous',
+            linkedTo:':previous',
             tooltip: {
                 valueSuffix: '°C'
             }
@@ -176,4 +176,12 @@ function updateSensorComparison(json) {
             format: '{value} °C'
         }
     });
+    
+    var extremes = chart.yAxis[0].getExtremes();
+
+        console.log(
+            'dataMax: ' + extremes.dataMax + '<br/>' +
+                'dataMin: ' + extremes.dataMin + '<br/>' +
+                'max: ' + extremes.max + '<br/>' +
+                'min: ' + extremes.min + '<br/>');
 }
