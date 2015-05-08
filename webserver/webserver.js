@@ -40,39 +40,36 @@ app.get('/init', function (req, res) {
 
 
 app.get('/data', function (req, res) {
-	
-	console.log("sensortype: " + req.query.sensortype);	
-	console.log("areas: " + req.query.areas);
-	console.log("aggregation: " + req.query.aggregation);
-	console.log("startdate: " + req.query.startdate+"\n");
+	console.log("query:" + JSON.stringify(req.query));
 	
 	var finerAggregation;
 	var dateParts = req.query.startdate.split("/");
 	var str = dateParts[2]+"-"+dateParts[1]+"-"+dateParts[0]+" 00:00:00";
 	var startDate = new Date(str);
 	var endDate = new Date(startDate);
-	req.query.areas = req.query.areas.split(",");
-	var areas = req.query.areas;   
-	var sensortype = req.query.sensortype;
+	req.query.datastationID = req.query.datastationID.split(",");
+	var datastationID = req.query.datastationID;   
+	var sensortypeID = req.query.sensortypeID;
 	
-	switch(req.query.aggregation) {
+	switch(req.query.timespan) {
     	case "year":
-			title = "Monthly "+ sensortype;
+			title = "Monthly "+ sensortypeID;
         	finerAggregation = "m";
         	endDate.setFullYear(startDate.getFullYear() + 1); 
         	break;
     	case "month":
-			title = "Daily "+ sensortype;
+			title = "Daily "+ sensortypeID;
         	finerAggregation = "d";
         	endDate.setMonth(startDate.getMonth() + 1);
         	break;
         case "week":
-			title = "Daily "+sensortype;
+			title = "Daily "+sensortypeID;
         	finerAggregation = "d";
         	endDate.setDate(startDate.getDate() + 7);
         	break;
         case "day":
-			title = "Hourly "+sensortype;
+			title = "Hourly "+sensortypeID;
+			title = "Hourly "+sensortypeID;
         	finerAggregation = "H";
         	endDate.setDate(startDate.getDate() + 1);
         	break;
@@ -87,8 +84,8 @@ app.get('/data', function (req, res) {
     	url: 'http://localhost:'+ config.development.applicationserver.port+'/query', //URL to hit
     	method: 'POST',
     	json: {
-        	Areas : areas,
-			Sensortype : sensortype,
+        	DatastationID : datastationID,
+			SensortypeID : sensortypeID,
 			StartDate : startDate,
 			EndDate : endDate,
 			Aggregation : finerAggregation
@@ -127,7 +124,7 @@ app.get('/data', function (req, res) {
 				
 				var areaDictionary = [];
 				var length = timeframes.length;
-				areas.forEach(function(item) {
+				datastationID.forEach(function(item) {
 					areaDictionary[item] = [length];
 					for (var i = 0; i < length; i++){
 						areaDictionary[item][i]=null;
@@ -156,14 +153,14 @@ app.get('/data', function (req, res) {
 					dataObject.y = Number(item["Average"].toPrecision(4));
 					dataObject.low = Number(item["Minimum"].toPrecision(4));
 					dataObject.high = Number(item["Maximum"].toPrecision(4));
-					areaDictionary[item.Area][difference] = dataObject;
+					areaDictionary[item.DatastationID][difference] = dataObject;
 				});
 				
 				var data = {};
 				data.title = title;
 				data.timeframes = timeframes;
 				data.dataPerArea = [];
-				areas.forEach(function(item) {
+				datastationID.forEach(function(item) {
 					var areasData = {}
 					areasData.name = item;
 					areasData.data = areaDictionary[item];
