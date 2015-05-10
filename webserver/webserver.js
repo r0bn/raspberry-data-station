@@ -153,7 +153,7 @@ app.get('/data', function (req, res) {
 					dataObject.y = Number(item["Average"].toPrecision(4));
 					dataObject.low = Number(item["Minimum"].toPrecision(4));
 					dataObject.high = Number(item["Maximum"].toPrecision(4));
-					areaDictionary[item.DatastationID][difference] = dataObject;
+					areaDictionary[item.ID][difference] = dataObject;
 				});
 				
 				var data = {};
