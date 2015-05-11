@@ -35,7 +35,10 @@ $(document).ready(function() {
 function initDatastationsAndSensortypes(json) {
     console.log(json['datastations']);
     console.log(json['sensortypes']);
-    if (json['datastations'].length < 1 && json['sensortypes'].length < 1) {
+    if (json.length == 0){
+        alert('no values for room and sensortypes in the database');
+    }
+    else if (json['datastations'].length < 1 && json['sensortypes'].length < 1) {
         console.log('no datastations and sensortypes, no values in database');
     } else {
         //SENSORCOMPARISON
@@ -69,6 +72,7 @@ function initDatastationsAndSensortypes(json) {
             selectsensortypes.append("<option value=" + v['ID'] + ">" + v['Name'] + "</option>");
             selectsensortypes.selectpicker('refresh');
         });
+        sensorComparison();
         
 //        //TIMESPANCOMPARISON
 //        var sensorcomparison = $('#timespancomparison');
@@ -97,12 +101,12 @@ function initDatastationsAndSensortypes(json) {
     }
 }
 
-
-
-
-
 $('#sensorcomparisonsubmit').click(function() {
-    $.ajax({
+    sensorComparison();
+});
+
+function sensorComparison(){
+        $.ajax({
         type: 'GET',
         url: '/data',
         dataType: 'json',
@@ -112,8 +116,7 @@ $('#sensorcomparisonsubmit').click(function() {
             updateSensorComparison(json);
         }
     });
-});
-
+}
 function getParametersOfSensorComparsion() {
     var arr = [];
     $.each($('#sensorcomparison #rooms option:selected'), function(i, v) {
