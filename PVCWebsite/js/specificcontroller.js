@@ -28,9 +28,10 @@ $(document).ready(function() {
         success: function(json) {
             console.log(json);
             initDatastationsAndSensortypes(json);
+            sensorComparison();
         }
     });
-    sensorComparison();
+    
 });
 
 function initDatastationsAndSensortypes(json) {
@@ -87,6 +88,9 @@ function initDatastationsAndSensortypes_UpdateFields(json, sensorOrTimespanCompa
 $('#sensorcomparisonsubmit').click(function() {
     sensorComparison();
 });
+$('#timespancomparisonsubmit').click(function() {
+    timespanComparison();
+});
 
 function sensorComparison(){
         $.ajax({
@@ -96,26 +100,49 @@ function sensorComparison(){
         data: getParametersOfSensorComparsion(),
         success: function(json) {
             console.log(json);
-            updateSensorComparison(json);
+            updateSensorAndTimespanComparisonChart(json, '#chartSensorComparsion');
         }
     });
 }
+function timespanComparison(){
+        $.ajax({
+        type: 'GET',
+        url: '/data',
+        dataType: 'json',
+        data: getParametersOfTimespanComparsion(),
+        success: function(json) {
+            console.log(json);
+            updateSensorAndTimespanComparisonChart(json, '#chartTimespanComparsion');
+        }
+    });
+}
+
 function getParametersOfSensorComparsion() {
+    var sC = $('#sensorcomparison');
     var arr = [];
-    $.each($('#sensorcomparison #rooms option:selected'), function(i, v) {
+    $.each(sC.find('#rooms option:selected'), function(i, v) {
         arr[i] = v['value'];
     });
     var datastations = arr.toString();
-    var sensortype = $('#sensorcomparison #sensortype option:selected').val();
-    var timespan = $('#sensorcomparison #aggregation .active input').val();
+    var sensortype = sC.find('#sensortype option:selected').val();
+    var timespan = sC.find('#aggregation .active input').val();
     var startdate = $('#datepicker1').val();
     return {'datastationID': datastations, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate};
 }
 
+function getParametersOfTimespanComparsion() {
+    var tC = $('#timespancomparison');
+    var datastation = tC.find('#rooms option:selected').val();
+    var sensortype = tC.find('#sensortype option:selected').val();
+    var timespan = tC.find('#aggregation .active input').val();
+    var startdate2 = $('#datepicker2').val();
+    var startdate3 = $('#datepicker3').val();
+    return {'datastationID': datastation, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate2+','+startdate3};
+}
 
-function updateSensorComparison(json) {
+function updateSensorAndTimespanComparisonChart(json, chartID) {
     //get chart as object to modify it
-    var chart = $('#chartSensorComparsion').highcharts();
+    var chart = $(chartID).highcharts();
     //set title of chart
     chart.setTitle({
         text: json['data']['title']
