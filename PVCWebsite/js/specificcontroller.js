@@ -6,21 +6,21 @@ $(document).ready(function() {
         firstDay: 1 // Start with Monday
     });
     $("#datepicker1").datepicker("update", new Date());
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
     $('#datepicker2').datepicker({
         format: "dd/mm/yyyy",
         autoclose: 'true',
         firstDay: 1 // Start with Monday
     });
-    $("#datepicker2").datepicker("update", new Date());
+    $("#datepicker2").datepicker("update", yesterday);
     $('#datepicker3').datepicker({
         format: "dd/mm/yyyy",
         autoclose: 'true',
         firstDay: 1 // Start with Monday
     });
     $("#datepicker3").datepicker("update", new Date());
-});
 
-$(document).ready(function() {
     $.ajax({
         type: 'GET',
         url: '/init',
@@ -30,6 +30,7 @@ $(document).ready(function() {
             initDatastationsAndSensortypes(json);
         }
     });
+    sensorComparison();
 });
 
 function initDatastationsAndSensortypes(json) {
@@ -43,10 +44,17 @@ function initDatastationsAndSensortypes(json) {
     } else {
         //SENSORCOMPARISON
         var sensorcomparison = $('#sensorcomparison');
+        initDatastationsAndSensortypes_UpdateFields(json, sensorcomparison, "SC");
+        //TIMESPANCOMPARISON
+        var timespancomparison = $('#timespancomparison');
+        initDatastationsAndSensortypes_UpdateFields(json, timespancomparison, "TC");
+    }
+}
 
+function initDatastationsAndSensortypes_UpdateFields(json, sensorOrTimespanComparison, SCorTC) {
         //ROOMS
         //first remove old options
-        var selectrooms = sensorcomparison.find('#rooms select');
+        var selectrooms = sensorOrTimespanComparison.find('#rooms select');
         selectrooms.find('option').remove();
         selectrooms.selectpicker('refresh');
 
@@ -59,46 +67,21 @@ function initDatastationsAndSensortypes(json) {
         //select first  (SENSORCOMPARISON EXTRA)
         if(json['datastations'].length===1)
         selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
-        if(json['datastations'].length>1)
+        if(json['datastations'].length>1 && SCorTC =="SC")
         selectrooms.selectpicker('val', [json['datastations'][0]['ID'],json['datastations'][1]['ID']]);
+        if(json['datastations'].length>1 && SCorTC =="TC")
+        selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
         
         //SENSORTYPES
         //first remove old options
-        var selectsensortypes = sensorcomparison.find('#sensortype select');
+        var selectsensortypes = sensorOrTimespanComparison.find('#sensortype select');
         selectsensortypes.find('option').remove();
         selectsensortypes.selectpicker('refresh');
 
         $.each(json['sensortypes'], function(i, v) {
             selectsensortypes.append("<option value=" + v['ID'] + ">" + v['Name'] + "</option>");
             selectsensortypes.selectpicker('refresh');
-        });
-        sensorComparison();
-        
-//        //TIMESPANCOMPARISON
-//        var sensorcomparison = $('#timespancomparison');
-//
-//        //ROOMS
-//        //first remove old options
-//        var selectrooms = sensorcomparison.find('#rooms select');
-//        selectrooms.find('option').remove();
-//        selectrooms.selectpicker('refresh');
-//
-//        $.each(json['datastations'], function(i, v) {
-//            selectrooms.append("<option value=" + v['Area'] + ">" + v['Area'] + "</option>");
-//            selectrooms.selectpicker('refresh');
-//        });
-//
-//        //SENSORTYPES
-//        //first remove old options
-//        var selectsensortypes = sensorcomparison.find('#sensortype select');
-//        selectsensortypes.find('option').remove();
-//        selectsensortypes.selectpicker('refresh');
-//
-//        $.each(json['sensortypes'], function(i, v) {
-//            selectsensortypes.append("<option value=" + v['ID'] + ">" + v['Name'] + "</option>");
-//            selectsensortypes.selectpicker('refresh');
-//        });     
-    }
+        });    
 }
 
 $('#sensorcomparisonsubmit').click(function() {
