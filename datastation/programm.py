@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import re
@@ -8,13 +8,97 @@ import urllib2
 import calendar
 from datetime import datetime
 import time
+import sys
+from ctypes import *
+#cdll.LoadLibrary("./bcm2835.so")
+import math
 
-# TODO: Move to config file
-path = "/sys/bus/w1/devices/10-000802b56552/w1_slave"
+
+# Path to Application and DB Server 
 url = "http://pvc.r9u.de:7090/insert" 
-#url = "http://0.0.0.0:3000/insert" 
+# Path to temperature sensor DS1820
+path = "/sys/bus/w1/devices/10-000802b56552/w1_slave"
 
-# read and parse sensor data file
+# MPL3115a2 Sensor Board
+sensor = CDLL("/home/pi/sensor.so")
+class mpl3115a2:
+	def __init__(self):
+		if (0 == sensor.bcm2835_init()):
+			print "bcm3835 driver init failed."
+			return
+			
+	def writeRegister(self, register, value):
+	    sensor.MPL3115A2_WRITE_REGISTER(register, value)
+	    
+	def readRegister(self, register):
+		return sensor.MPL3115A2_READ_REGISTER(register)
+
+	def active(self):
+		sensor.MPL3115A2_Active()
+
+	def standby(self):
+		sensor.MPL3115A2_Standby()
+
+	def initAlt(self):
+		sensor.MPL3115A2_Init_Alt()
+
+	def initBar(self):
+		sensor.MPL3115A2_Init_Bar()
+
+	def readAlt(self):
+		return sensor.MPL3115A2_Read_Alt()
+
+	def readTemp(self):
+		return sensor.MPL3115A2_Read_Temp()
+
+	def setOSR(self, osr):
+		sensor.MPL3115A2_SetOSR(osr);
+
+	def setStepTime(self, step):
+		sensor.MPL3115A2_SetStepTime(step)
+
+	def getTemp(self):
+		t = self.readTemp()
+		t_m = (t >> 8) & 0xff;
+		t_l = t & 0xff;
+
+		if (t_l > 99):
+			t_l = t_l / 1000.0
+		else:
+			t_l = t_l / 100.0
+		return (t_m + t_l)
+
+	def getAlt(self):
+		alt = self.readAlt()
+		alt_m = alt >> 8 
+		alt_l = alt & 0xff
+		
+		if (alt_l > 99):
+			alt_l = alt_l / 1000.0
+		else:
+			alt_l = alt_l / 100.0
+			
+		return self.twosToInt(alt_m, 16) + alt_l
+	def getBar(self):
+		alt = self.readAlt()
+		alt_m = alt >> 6 
+		alt_l = alt & 0x03
+		
+		if (alt_l > 99):
+			alt_l = alt_l 
+		else:
+			alt_l = alt_l 
+
+		return (self.twosToInt(alt_m, 18))
+
+	def twosToInt(self, val, len):
+		# Convert twos compliment to integer
+		if(val & (1 << len - 1)):
+			val = val - (1<<len)
+
+		return val
+		
+# read DS1820 sensor
 def read_sensor(path):
     value = "U"
     try:
@@ -30,23 +114,47 @@ def read_sensor(path):
         print time.strftime("%x %X"), "Error reading", path, ": ", e
     return value
 
-def send_json(value):
+
+
+# json gateway to application server
+def send_json(value, sensortype, datastationId, unit, area):
     req = urllib2.Request(url)
     ts = time.time()
     data = {
-            'DatastationID': 100,
+            'DatastationID': datastationId,
             'Timestamp': datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),
             'Value' : str(value),
-            'Sensortype' : 'temperatur',
-            'Area' : 'RobWG',
-            'Unit' : '°C'
+            'Sensortype' : sensortype,
+            'Area' : area,
+            'Unit' : unit 
             }
     req.add_header('Content-Type', 'application/json')
     print data
     response = urllib2.urlopen(req, json.dumps(data))
 
 # main
-data = "N"
-data = read_sensor(path)
-send_json(data)
-time.sleep(1)
+datastationId = int(sys.argv[1])
+sensorK = sys.argv[2]
+area = sys.argv[3]
+
+if sensorK == "ds1820":
+    value = read_sensor(path)
+    send_json(value, 'temperature', datastationId, '°C', area)
+
+if sensorK == "mpl3115a2T":
+    mpl = mpl3115a2()
+    mpl.initBar()
+    mpl.active()
+    time.sleep(1)
+
+    value = mpl.getTemp() 
+    send_json(value, 'temperature', datastationId, '°C', area)
+
+if sensorK == "mpl3115a2B":
+    mpl = mpl3115a2()
+    mpl.initBar()
+    mpl.active()
+    time.sleep(1)
+
+    value = mpl.getBar() / 100
+    send_json(value, 'pressure', datastationId, 'hPa', area)
