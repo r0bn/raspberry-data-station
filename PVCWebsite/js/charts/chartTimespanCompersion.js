@@ -49,7 +49,7 @@
         plotOptions: {
             series: {
                 marker: {
-                    enabled: false,
+//                    enabled: false,
                     symbol: 'circle'
                 }
             }

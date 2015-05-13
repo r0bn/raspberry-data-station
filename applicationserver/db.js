@@ -10,6 +10,25 @@ var jsonParser = bodyParser.json()
 
 //Send all Datastations
 app.get('/allDatastations', function(req, res){
+
+	/*
+		Return all datastations which are in the database:
+		
+		{
+        	"ID": (Integer),
+        	"Area": (String)
+    	}
+		
+		For example:
+		{
+        	"ID": 1,
+        	"Area": "1/111"
+    	},
+    	{
+        	"ID": 2,
+        	"Area": "1/112"
+    	}
+	*/
 	
 	var sqlite3 = require('sqlite3').verbose();
 	var db = new sqlite3.Database('database.db');
@@ -30,6 +49,28 @@ app.get('/allDatastations', function(req, res){
 
 //Send all Sensortypes
 app.get('/allSensortypes', function(req, res){
+
+	/*
+		Return all sensortypes which are in the database
+		
+		{
+        	"ID": (Integer),
+        	"Name": (String),
+        	"Unit": (String)
+    	}
+		
+		For example:
+		{
+        	"ID": 1,
+        	"Name": "Temperature",
+        	"Unit": "Celsius"
+    	},
+    	{
+        	"ID": 2,
+        	"Name": "Pressure",
+        	"Unit": "Bar"
+    	}
+	*/
 	
 	var sqlite3 = require('sqlite3').verbose();
 	var db = new sqlite3.Database('database.db');
@@ -55,8 +96,8 @@ app.post('/query', jsonParser, function(req, res){
     	/*
     		Expect POST-Request with properties:
     		{
-  				"Areas": [Array of Strings],
-  				"Sensortype": (String),
+  				"DatastationID": [String-Array],
+  				"SensortypeID": (String),
   				"StartDate": (String),
   				"EndDate": (String),
 			  	"Aggregation": (String)
@@ -67,28 +108,46 @@ app.post('/query', jsonParser, function(req, res){
     		
     		Aggregation-Format: "Y" (Year) or "m" (Month) or "d" (Day) 
     							or H" (Hour) or "M" (Minute) or "S" (Millisecond)
+    							
+    		Return JSON-Object with properties:
+    		{
+        		"ID": (Integer),
+        		"Average": (Integer),
+        		"Minimum": (Integer),
+        		"Maximum": (Integer),
+        		"Timestamp": (String)
+    		}
+    		
+    		for example:
+    		{
+        		"ID": 1,
+        		"Average": 1,
+        		"Minimum": 1,
+        		"Maximum": 1,
+        		"Timestamp": "2015-04-01 00:00:00"
+    		},
     	*/
     	
-    	var areas, sensortype, startDate, endDate, aggregation;
+    	var datastationID, sensortypeID, startDate, endDate, aggregation;
     	
     	//console.log(req.body);
-        if("Areas" in req.body)
+        if("DatastationID" in req.body)
         {
-        	areas = req.body.Areas;
+        	datastationID = req.body.DatastationID;
         }
         else
         {
-        	console.log("Missing parameter Areas");
+        	console.log("Missing parameter DatastationID");
          	res.sendStatus(500);
          	return;
         }
-        if("Sensortype" in req.body)
+        if("SensortypeID" in req.body)
         {
-        	sensortype = req.body.Sensortype;
+        	sensortypeID = req.body.SensortypeID;
         }
         else
         {
-        	console.log("Missing parameter Sensortype");
+        	console.log("Missing parameter SensortypeID");
          	res.sendStatus(500);
         }
         if("StartDate" in req.body)
@@ -126,15 +185,15 @@ app.post('/query', jsonParser, function(req, res){
         var sqlite3 = require('sqlite3').verbose();
 		var db = new sqlite3.Database('database.db'); 
 		
-		var areaStr = "D.Area = \""+areas[0]+"\"";
+		var datastationsIdString = "D.ID = \""+datastationID[0]+"\"";
 		//console.log("areastring: "+ areaStr);
-		for (var i = 1; i <areas.length; i++){
-			areaStr = areaStr + " OR ";
-			areaStr = areaStr + "D.Area = \""+areas[i]+"\"";
+		for (var i = 1; i <datastationID.length; i++){
+			datastationsIdString = datastationsIdString + " OR ";
+			datastationsIdString = datastationsIdString + "D.ID = \""+datastationID[i]+"\"";
 		}
-		//console.log("areastring: "+ areaStr);
+		//console.log("datastationsIdString: "+ datastationsIdString);
 		
-		var query = "SELECT D.Area, avg(M.Value) AS Average, min(M.Value)AS Minimum, "+
+		var query = "SELECT D.ID, avg(M.Value) AS Average, min(M.Value)AS Minimum, "+
 					"max(M.Value) AS Maximum, strftime(\"%Y-%m-%d %H:%M:%S\",M.Timestamp) AS Timestamp "+
 					"FROM Data AS M "+
 					"JOIN Sensors AS SE ON SE.ID = M.SensorID "+
@@ -143,9 +202,9 @@ app.post('/query', jsonParser, function(req, res){
 					"WHERE strftime(\"%Y-%m-%d %H%M%S\", M.Timestamp) "+
 					"BETWEEN \""+startDate+"\" "+ 
 					"AND \""+endDate+"\" "+
-					"AND (" + areaStr + ") "+
-					"AND ST.Name = \""+sensortype+"\" "+
-					"GROUP BY D.Area, "+
+					"AND " + datastationsIdString + " "+
+					"AND ST.ID = \""+sensortypeID+"\" "+
+					"GROUP BY D.ID, "+
 					"strftime(\"%"+aggregation+"\", M.Timestamp)";
 		
 		//console.log(query);
@@ -183,6 +242,9 @@ app.post('/insert', jsonParser, function(req, res){
     		
     		Timestamp-Format: 	YYYY-MM-DD HH:mm:ss
     		Example:			2015-04-01 00:00:00
+    		
+    		Return status code 200 if insert was succesfull
+    		Return status code 500 if insert failed
     	*/
          
          var datastationID;

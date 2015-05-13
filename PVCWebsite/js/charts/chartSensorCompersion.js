@@ -58,7 +58,7 @@ $(function() {
         plotOptions: {
             series: {
                 marker: {
-                    enabled: false,
+//                    enabled: false,
                     symbol: 'circle'
                 },
                 dashStyle: 'shortdot',

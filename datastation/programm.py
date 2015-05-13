@@ -39,7 +39,7 @@ def send_json(value):
             'Value' : str(value),
             'Sensortype' : 'temperatur',
             'Area' : 'RobWG',
-            'Unit' : 'Grad'
+            'Unit' : '°C'
             }
     req.add_header('Content-Type', 'application/json')
     print data
