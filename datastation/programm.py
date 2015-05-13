@@ -7,6 +7,7 @@ import json
 import urllib2
 import calendar
 from datetime import datetime
+import time
 
 # TODO: Move to config file
 path = "/sys/bus/w1/devices/10-000802b56552/w1_slave"
@@ -31,9 +32,10 @@ def read_sensor(path):
 
 def send_json(value):
     req = urllib2.Request(url)
+    ts = time.time()
     data = {
-            'DatenstationID': ,
-            'Zeitstempel': datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),
+            'DatastationID': 100,
+            'Timestamp': datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'),
             'Value' : str(value),
             'Sensortype' : 'temperatur',
             'Area' : 'RobWG',
