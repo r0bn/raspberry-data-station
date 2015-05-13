@@ -86,7 +86,7 @@ function mergeData(dataArray)
 	
 	var dataMerged = {};
 	dataMerged.title = dataArray[0].title;
-        dataMerged.titlesensortypeID = dataArray[0].titlesensortypeID;
+	dataMerged.titlesensortypeID = dataArray[0].titlesensortypeID;
 	dataMerged.timeframes = timeframesMerged;
 	dataMerged.dataPerArea = dataPerAreaMerged;
 	return dataMerged;
@@ -147,7 +147,7 @@ var requestData = function(req, callback){
 				var areaDictionary = createAreaDictionary(datastationID, timeframes.length);		
 				areaDictionary = fillAreaDictionary (startDate, finerAggregation, areaDictionary, rows)
 				
-				var data = createDataResponse (title, sensortypeID, timeframes, areaDictionary, datastationID, req.query);
+				var data = createDataResponse (title, sensortypeID, timeframes, areaDictionary, datastationID, startDate, endDate);
 				callback(data);
 			}
 		}
@@ -156,27 +156,11 @@ var requestData = function(req, callback){
 
 function formatDate(date)
 {
-	return date.getFullYear() + "-" + pad(date.getMonth()+1) + "-" + pad(date.getDate()) + " 00:00:00";
+	return pad(date.getDate()) + "/" + pad(date.getMonth()+1) + "/" + date.getFullYear() ;
 }
 	
 function pad(n) {
     return (n < 10) ? ("0" + n) : n;
-}
-	
-function createDataResponse(title, sensortypeID, timeframes, areaDictionary, datastationID, query){
-	var data = {};
-	data.title = title;
-        data.titlesensortypeID = sensortypeID;
-	data.timeframes = timeframes;
-	data.dataPerArea = [];
-	datastationID.forEach(function(item) {
-		var areasData = {}
-		areasData.name = item;
-                areasData.nameTimeframe = 'Dummytimeframe'; //@todo
-		areasData.data = areaDictionary[item];
-		data.dataPerArea.push(areasData);
-		});
-	return data;
 }
 	
 function createTimeframes (startDate, endDate, finerAggregation){
@@ -242,4 +226,23 @@ function fillAreaDictionary (startDate, finerAggregation, areaDictionary, rows)
 		areaDictionary[item.ID][difference] = dataObject;
 	});
 	return areaDictionary;
+}
+
+function createDataResponse(title, sensortypeID, timeframes, areaDictionary, datastationID, startDate, endDate){
+	var data = {};
+	data.title = title;
+    data.titlesensortypeID = sensortypeID;
+	data.timeframes = timeframes;
+	data.dataPerArea = [];
+	datastationID.forEach(function(item) {
+		var areasData = {}
+		areasData.name = item;
+		//for correct displaying
+		endDate.setDate(endDate.getDate()-1);
+        areasData.nameTimeframe = formatDate(startDate) + " - " + formatDate(endDate);
+		
+		areasData.data = areaDictionary[item];
+		data.dataPerArea.push(areasData);
+		});
+	return data;
 }	
