@@ -185,12 +185,13 @@ app.post('/query', jsonParser, function(req, res){
         var sqlite3 = require('sqlite3').verbose();
 		var db = new sqlite3.Database('database.db'); 
 		
-		var datastationsIdString = "D.ID = \""+datastationID[0]+"\"";
+		var datastationsIdString = "(D.ID = \""+datastationID[0]+"\"";
 		//console.log("areastring: "+ areaStr);
 		for (var i = 1; i <datastationID.length; i++){
 			datastationsIdString = datastationsIdString + " OR ";
 			datastationsIdString = datastationsIdString + "D.ID = \""+datastationID[i]+"\"";
 		}
+		datastationsIdString = datastationsIdString +")";
 		//console.log("datastationsIdString: "+ datastationsIdString);
 		
 		var query = "SELECT D.ID, avg(M.Value) AS Average, min(M.Value)AS Minimum, "+

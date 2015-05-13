@@ -3,7 +3,7 @@ $(document).ready(function() {
     $('#datepicker1').datepicker({
         format: "dd/mm/yyyy",
         autoclose: 'true',
-        firstDay: 1 // Start with Monday
+        weekStart: 1 // Start with Monday
     });
     $("#datepicker1").datepicker("update", new Date());
     var yesterday = new Date();
@@ -11,13 +11,13 @@ $(document).ready(function() {
     $('#datepicker2').datepicker({
         format: "dd/mm/yyyy",
         autoclose: 'true',
-        firstDay: 1 // Start with Monday
+        weekStart: 1 // Start with Monday
     });
     $("#datepicker2").datepicker("update", yesterday);
     $('#datepicker3').datepicker({
         format: "dd/mm/yyyy",
         autoclose: 'true',
-        firstDay: 1 // Start with Monday
+        weekStart: 1 // Start with Monday
     });
     $("#datepicker3").datepicker("update", new Date());
 
@@ -29,11 +29,13 @@ $(document).ready(function() {
             console.log(json);
             initDatastationsAndSensortypes(json);
             sensorComparison();
+            timespanComparison();
         }
     });
     
 });
 
+var initJSON;
 function initDatastationsAndSensortypes(json) {
     console.log(json['datastations']);
     console.log(json['sensortypes']);
@@ -44,6 +46,8 @@ function initDatastationsAndSensortypes(json) {
         console.log('no datastations and sensortypes, no values in database');
     } else {
         //SENSORCOMPARISON
+//        saveValuesAsArrayInSession(json);
+    initJSON=json;
         var sensorcomparison = $('#sensorcomparison');
         initDatastationsAndSensortypes_UpdateFields(json, sensorcomparison, "SC");
         //TIMESPANCOMPARISON
@@ -143,9 +147,15 @@ function getParametersOfTimespanComparsion() {
 function updateSensorAndTimespanComparisonChart(json, chartID) {
     //get chart as object to modify it
     var chart = $(chartID).highcharts();
+    var sensortype;
+    $.each(initJSON['sensortypes'], function(i, v) {
+        if(json['data']['titlesensortypeID']==v['ID']){
+            sensortype = v['Name'];
+        }
+    });  
     //set title of chart
     chart.setTitle({
-        text: json['data']['title']
+        text: json['data']['title'] + sensortype
     });
     //set categories of chart
     chart.xAxis[0].setCategories(json['data']['timeframes']);
@@ -157,19 +167,33 @@ function updateSensorAndTimespanComparisonChart(json, chartID) {
     var colorid = 0;
     json['data']['dataPerArea'].forEach(function(dataPerArea) {
         console.log(dataPerArea);
-        var dataPerAreaSpline = {type: 'spline', name: dataPerArea.name + " avg", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
+        var datastationname;
+        $.each(initJSON['datastations'], function(i, v) {
+            if(dataPerArea.name==v['ID']){
+                datastationname = v['Area'];
+            }
+        });       
+        var dataPerAreaSpline = {type: 'spline', name: datastationname+ " "+dataPerArea.nameTimeframe, data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaSpline);
-        var dataPerAreaAreaRange = {type: 'areasplinerange', name: dataPerArea.name + " minmax", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
+        var dataPerAreaAreaRange = {type: 'areasplinerange', name: datastationname + " (min-max)", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaAreaRange);
         colorid++;
     });
+    
+     var unit;
+    $.each(initJSON['sensortypes'], function(i, v) {
+        if(json['data']['sensortypeID']==v['ID']){
+            unit = v['Unit'];
+        }
+    });
+    
     //set chart options depending on the sensortype
     for (var i = 0; i < chart.series.length; i = i + 2) {
         chart.series[i].update({
             dashStyle: 'solid',
             lineWidth: 3,
             tooltip: {
-                valueSuffix: '°C'
+                valueSuffix: unit
             }
         });
     }
@@ -180,21 +204,13 @@ function updateSensorAndTimespanComparisonChart(json, chartID) {
             lineWidth: 0,
             linkedTo:':previous',
             tooltip: {
-                valueSuffix: '°C'
+                valueSuffix: unit
             }
         });
     }
     chart.yAxis[0].update({
         labels: {
-            format: '{value} °C'
+            format: '{value} '+unit
         }
     });
-    
-    var extremes = chart.yAxis[0].getExtremes();
-
-        console.log(
-            'dataMax: ' + extremes.dataMax + '<br/>' +
-                'dataMin: ' + extremes.dataMin + '<br/>' +
-                'max: ' + extremes.max + '<br/>' +
-                'min: ' + extremes.min + '<br/>');
 }
