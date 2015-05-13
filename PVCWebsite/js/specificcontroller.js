@@ -182,7 +182,7 @@ function updateSensorAndTimespanComparisonChart(json, chartID) {
     
      var unit;
     $.each(initJSON['sensortypes'], function(i, v) {
-        if(json['data']['sensortypeID']==v['ID']){
+        if(json['data']['titlesensortypeID']==v['ID']){
             unit = v['Unit'];
         }
     });
