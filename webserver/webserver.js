@@ -99,8 +99,6 @@ var requestData = function(req, callback){
 	var endDate = new Date(startDate);
 	var datastationID = req.query.datastationID;   
 	var sensortypeID = req.query.sensortypeID;
-	sensortypeID = 1;
-	datastationID = [1];
 	
 	switch(req.query.timespan) {
     	case "year":
