@@ -175,7 +175,7 @@ function updateSensorAndTimespanComparisonChart(json, chartID) {
         });       
         var dataPerAreaSpline = {type: 'spline', name: datastationname+ " "+dataPerArea.nameTimeframe, data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaSpline);
-        var dataPerAreaAreaRange = {type: 'areasplinerange', name: datastationname + " (min-max)", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
+        var dataPerAreaAreaRange = {type: 'areasplinerange', name: datastationname + " "+dataPerArea.nameTimeframe+" (min-max)", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaAreaRange);
         colorid++;
     });
