@@ -238,8 +238,9 @@ function createDataResponse(title, sensortypeID, timeframes, areaDictionary, dat
 		var areasData = {}
 		areasData.name = item;
 		//for correct displaying
-		endDate.setDate(endDate.getDate()-1);
-        areasData.nameTimeframe = formatDate(startDate) + " - " + formatDate(endDate);
+		var displayEndDate = new Date(endDate);
+		displayEndDate.setDate(endDate.getDate()-1)
+        areasData.nameTimeframe = formatDate(startDate) + " - " + formatDate(displayEndDate);
 		
 		areasData.data = areaDictionary[item];
 		data.dataPerArea.push(areasData);
