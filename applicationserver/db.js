@@ -253,7 +253,7 @@ app.post('/insert', jsonParser, function(req, res){
          var unit;
          var sensortype; 
          
-         //console.log(req.body);
+         console.log(req.body);
          
          //Check if required values are available
          if("DatastationID" in req.body)
