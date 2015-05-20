@@ -330,6 +330,7 @@ app.post('/insert', jsonParser, function(req, res){
          
         //Insert data into database and begin with the datastation
         insertDatastation(db, datastationID, sensortype, area, unit, function(){
+            db.close();
             //Send status code 200
             res.sendStatus(200); 
         });
@@ -405,8 +406,8 @@ function insertMeasuredData(db, timestamp, sensorID, value, cb){
 				if(row.ID == null) row.ID = 0; 
 				var ID = parseInt(row.ID)+1; 
                 console.log("calculated ID: " + ID);
-				db.run("INSERT INTO Data (ID, Timestamp, SensorID, Value) VALUES (?, ?, ?, ?)", 
-				ID, timestamp, sensorID, value, function(err){
+				db.run("INSERT INTO Data (Timestamp, SensorID, Value) VALUES (?, ?, ?)", 
+				timestamp, sensorID, value, function(err){
                     if(err != null) {
                         console.log(err);
                     }
