@@ -397,26 +397,13 @@ function insertSensor(db, datastationID, sensortypID,cb){
 
 function insertMeasuredData(db, timestamp, sensorID, value, cb){
 	//Insert values into Table Data 
-	db.get("SELECT * FROM Data WHERE Timestamp=? AND SensorID=? AND Value=?", timestamp, sensorID, value, function(err, row) {
-		if(row == undefined){
-			db.get("SELECT max(ID) AS ID FROM Data", function(err, row){
-                if(err != null) {
-                    console.log(err);
-                }
-				if(row.ID == null) row.ID = 0; 
-				var ID = parseInt(row.ID)+1; 
-                console.log("calculated ID: " + ID);
-				db.run("INSERT INTO Data (Timestamp, SensorID, Value) VALUES (?, ?, ?)", 
-				timestamp, sensorID, value, function(err){
-                    if(err != null) {
-                        console.log(err);
-                    }
-					console.log("Insert measure data: "+this.lastID);
-                    cb()
-				});
-			});	
-		}
-	}); 
+    db.run("INSERT INTO Data (Timestamp, SensorID, Value) VALUES (?, ?, ?)", timestamp, sensorID, value, function(err){
+        if(err != null) {
+            console.log(err);
+        }
+        console.log("Insert measure data: "+this.lastID + " - Value: " + value);
+        cb()
+    });
 }
 
 var server = app.listen(config.development.applicationserver.port, function(){
