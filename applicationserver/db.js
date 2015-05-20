@@ -281,7 +281,7 @@ app.post('/insert', jsonParser, function(req, res){
          {
          	value = req.body.Value;
 
-            if(value === 0) {
+            if(parseInt(value) === 0) {
                 console.log("Parameter Value is 0");
                 res.sendStatus(500);
                 return;
