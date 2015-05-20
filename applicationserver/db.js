@@ -340,10 +340,20 @@ app.post('/insert', jsonParser, function(req, res){
 function insertDatastation(db, datastationID, sensortype, area, unit, cb){
 	//Check if the datastation exists 
 	db.get("SELECT * FROM Datastations WHERE ID=?", datastationID, function(err, row) {
+        if(err != null) {
+            console.log(err);
+            cb();
+            return;
+        }
 		if(row == undefined){
 			//console.log(row);
 			db.run("INSERT INTO Datastations (ID, Area) VALUES (?, ?)", datastationID, area,
 			function(err){
+                if(err != null) {
+                    console.log(err);
+                    cb();
+                    return;
+                }
 				console.log("Insert Datastation: "+this.lastID);
 				insertSensortype(db, datastationID, sensortype, unit, cb);
 			});
@@ -357,16 +367,22 @@ function insertDatastation(db, datastationID, sensortype, area, unit, cb){
 function insertSensortype(db, datastationID, sensortype, unit, cb){
 	//Check if sensortype exists
 	db.get("SELECT * FROM Sensortype WHERE Name=?", sensortype, function(err, row) {
+        if(err != null) {
+            console.log(err);
+            cb();
+            return;
+        }
 		if(row == undefined){
-			db.get("SELECT max(ID) AS ID FROM Sensortype", function(err, row){
-				if(row.ID == null) row.ID = 0;
-					var ID = parseInt(row.ID)+1; 
-					db.run("INSERT INTO Sensortype (ID, Name, Unit) VALUES (?, ?, ?)", ID, 
-					sensortype, unit, function(err){
-						console.log("Insert Sensortype: "+this.lastID)
-						insertSensor(db, datastationID, this.lastID,cb);
-					});
-			});	
+            db.run("INSERT INTO Sensortype (Name, Unit) VALUES (?, ?)", 
+            sensortype, unit, function(err){
+                if(err != null) {
+                    console.log(err);
+                    cb();
+                    return;
+                }
+                console.log("Insert Sensortype: "+this.lastID)
+                insertSensor(db, datastationID, this.lastID,cb);
+            });
 		}
 		else{
 			insertSensor(db, datastationID, row.ID,cb);
@@ -378,16 +394,22 @@ function insertSensor(db, datastationID, sensortypID,cb){
 	//Check if sensor exists
 	db.get("SELECT * FROM Sensors WHERE DatastationID=? AND SensortypeID=?", datastationID, sensortypID,
 		function(err, row) {
+            if(err != null) {
+                console.log(err);
+                cb();
+                return;
+            }
 			if(row == undefined){
-				db.get("SELECT max(ID) AS ID FROM Sensors", function(err, row){
-					if(row.ID == null) row.ID = 0;
-					var ID = parseInt(row.ID)+1; 
-					db.run("INSERT INTO Sensors (ID, DatastationID, SensortypeID) VALUES (?, ?, ?)", 
-					ID, datastationID, sensortypID, function(err){
-						console.log("Insert sensor: "+this.lastID);
-						insertMeasuredData(db, timestamp, this.lastID, value,cb)
-					});
-				});	
+                db.run("INSERT INTO Sensors (DatastationID, SensortypeID) VALUES (?, ?)", 
+                datastationID, sensortypID, function(err){
+                    if(err != null) {
+                        console.log(err);
+                        cb();
+                        return;
+                    }
+                    console.log("Insert sensor: "+this.lastID);
+                    insertMeasuredData(db, timestamp, this.lastID, value,cb)
+                });
 			}
 			else{
 				insertMeasuredData(db, timestamp, row.ID, value,cb)
