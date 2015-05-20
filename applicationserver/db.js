@@ -396,6 +396,9 @@ function insertMeasuredData(db, timestamp, sensorID, value){
 				var ID = parseInt(row.ID)+1; 
 				db.run("INSERT INTO Data (ID, Timestamp, SensorID, Value) VALUES (?, ?, ?, ?)", 
 				ID, timestamp, sensorID, value, function(err){
+                    if(err != null) {
+                        console.log(err);
+                    }
 					console.log("Insert measure data: "+this.lastID);
 				});
 			});	
