@@ -398,8 +398,12 @@ function insertMeasuredData(db, timestamp, sensorID, value){
 	db.get("SELECT * FROM Data WHERE Timestamp=? AND SensorID=? AND Value=?", timestamp, sensorID, value, function(err, row) {
 		if(row == undefined){
 			db.get("SELECT max(ID) AS ID FROM Data", function(err, row){
+                if(err != null) {
+                    console.log(err);
+                }
 				if(row.ID == null) row.ID = 0; 
 				var ID = parseInt(row.ID)+1; 
+                console.log("calculated ID: " + ID);
 				db.run("INSERT INTO Data (ID, Timestamp, SensorID, Value) VALUES (?, ?, ?, ?)", 
 				ID, timestamp, sensorID, value, function(err){
                     if(err != null) {
