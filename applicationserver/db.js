@@ -329,13 +329,14 @@ app.post('/insert', jsonParser, function(req, res){
 		var db = new sqlite3.Database('database.db');   
          
         //Insert data into database and begin with the datastation
-        insertDatastation(db, datastationID, sensortype, area, unit);
+        insertDatastation(db, datastationID, sensortype, area, unit, function(){
+            //Send status code 200
+            res.sendStatus(200); 
+        });
         
-        //Send status code 200
-        res.sendStatus(200); 
 })
 
-function insertDatastation(db, datastationID, sensortype, area, unit){
+function insertDatastation(db, datastationID, sensortype, area, unit, cb){
 	//Check if the datastation exists 
 	db.get("SELECT * FROM Datastations WHERE ID=?", datastationID, function(err, row) {
 		if(row == undefined){
@@ -343,16 +344,16 @@ function insertDatastation(db, datastationID, sensortype, area, unit){
 			db.run("INSERT INTO Datastations (ID, Area) VALUES (?, ?)", datastationID, area,
 			function(err){
 				console.log("Insert Datastation: "+this.lastID);
-				insertSensortype(db, datastationID, sensortype, unit);
+				insertSensortype(db, datastationID, sensortype, unit, cb);
 			});
 		}
 		else{
-			insertSensortype(db, datastationID, sensortype, unit);
+			insertSensortype(db, datastationID, sensortype, unit, cb);
 		}
 	});
 }
 
-function insertSensortype(db, datastationID, sensortype, unit){
+function insertSensortype(db, datastationID, sensortype, unit, cb){
 	//Check if sensortype exists
 	db.get("SELECT * FROM Sensortype WHERE Name=?", sensortype, function(err, row) {
 		if(row == undefined){
@@ -362,17 +363,17 @@ function insertSensortype(db, datastationID, sensortype, unit){
 					db.run("INSERT INTO Sensortype (ID, Name, Unit) VALUES (?, ?, ?)", ID, 
 					sensortype, unit, function(err){
 						console.log("Insert Sensortype: "+this.lastID)
-						insertSensor(db, datastationID, this.lastID);
+						insertSensor(db, datastationID, this.lastID,cb);
 					});
 			});	
 		}
 		else{
-			insertSensor(db, datastationID, row.ID);
+			insertSensor(db, datastationID, row.ID,cb);
 		}
 	});
 }
 
-function insertSensor(db, datastationID, sensortypID){
+function insertSensor(db, datastationID, sensortypID,cb){
 	//Check if sensor exists
 	db.get("SELECT * FROM Sensors WHERE DatastationID=? AND SensortypeID=?", datastationID, sensortypID,
 		function(err, row) {
@@ -383,17 +384,17 @@ function insertSensor(db, datastationID, sensortypID){
 					db.run("INSERT INTO Sensors (ID, DatastationID, SensortypeID) VALUES (?, ?, ?)", 
 					ID, datastationID, sensortypID, function(err){
 						console.log("Insert sensor: "+this.lastID);
-						insertMeasuredData(db, timestamp, this.lastID, value)
+						insertMeasuredData(db, timestamp, this.lastID, value,cb)
 					});
 				});	
 			}
 			else{
-				insertMeasuredData(db, timestamp, row.ID, value)
+				insertMeasuredData(db, timestamp, row.ID, value,cb)
 			}		
 		});
 }
 
-function insertMeasuredData(db, timestamp, sensorID, value){
+function insertMeasuredData(db, timestamp, sensorID, value, cb){
 	//Insert values into Table Data 
 	db.get("SELECT * FROM Data WHERE Timestamp=? AND SensorID=? AND Value=?", timestamp, sensorID, value, function(err, row) {
 		if(row == undefined){
@@ -410,6 +411,7 @@ function insertMeasuredData(db, timestamp, sensorID, value){
                         console.log(err);
                     }
 					console.log("Insert measure data: "+this.lastID);
+                    cb()
 				});
 			});	
 		}
