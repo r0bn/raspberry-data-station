@@ -326,14 +326,22 @@ app.post('/insert', jsonParser, function(req, res){
          
         //Insert the new values into the database
         var sqlite3 = require('sqlite3').verbose();
-		var db = new sqlite3.Database('database.db');   
+		var db = new sqlite3.Database('database.db', sqlite3.OPEN_READWRITE, function(err){
+            if(err != null) {
+                console.log(err);
+                return;
+            }
+            db.serialize();
+
+            //Insert data into database and begin with the datastation
+            insertDatastation(db, datastationID, sensortype, area, unit, function(){
+                db.close();
+                //Send status code 200
+                res.sendStatus(200); 
+            });
+
+        });   
          
-        //Insert data into database and begin with the datastation
-        insertDatastation(db, datastationID, sensortype, area, unit, function(){
-            db.close();
-            //Send status code 200
-            res.sendStatus(200); 
-        });
         
 })
 
@@ -418,12 +426,14 @@ function insertSensor(db, datastationID, sensortypID,cb){
 }
 
 function insertMeasuredData(db, timestamp, sensorID, value, cb){
+
+    console.log("Debug measure data: - Value: " + value + " - Sensor: " + sensorID);
 	//Insert values into Table Data 
     db.run("INSERT INTO Data (Timestamp, SensorID, Value) VALUES (?, ?, ?)", timestamp, sensorID, value, function(err){
         if(err != null) {
             console.log(err);
         }
-        console.log("Insert measure data: "+this.lastID + " - Value: " + value);
+        console.log("Insert measure data: "+this.lastID + " - Value: " + value + " - Sensor: " + sensorID);
         cb()
     });
 }
