@@ -324,7 +324,7 @@ app.post('/insert', jsonParser, function(req, res){
          	return;
          }
 
-         inserQuery.push({
+         insertQuery.push({
              datastationID : datastationID,
              sensortype : sensortype,
              area : area,
@@ -358,7 +358,7 @@ function handleQueue() {
                 if(err != null) {
                     console.log(err);
                 }
-                dbIsOpen = true;
+                dbIsOpen = false;
                 handleQueue();
                 });
             });
