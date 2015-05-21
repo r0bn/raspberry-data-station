@@ -252,7 +252,8 @@ app.post('/insert', jsonParser, function(req, res){
          var area;
          var unit;
          var sensortype; 
-         
+        
+         console.log("### - ###")
          console.log(req.body);
          
          //Check if required values are available
@@ -324,27 +325,6 @@ app.post('/insert', jsonParser, function(req, res){
          	return;
          }
 
-         insertQuery.push({
-             datastationID : datastationID,
-             sensortype : sensortype,
-             area : area,
-             unit : unit
-         })
-         handleQueue();
-         
-        //Send status code 200
-        res.sendStatus(200); 
-        
-})
-
-insertQuery = []
-dbIsOpen = false
-
-function handleQueue() {
-    if(!dbIsOpen && insertQuery.length > 0) {
-        dbIsOpen = true;
-        data = insertQuery.shift() 
-
         //Insert the new values into the database
         var sqlite3 = require('sqlite3').verbose();
         var db = new sqlite3.Database('database.db', sqlite3.OPEN_READWRITE, function(err){
@@ -353,19 +333,20 @@ function handleQueue() {
                 return;
             }
             //Insert data into database and begin with the datastation
-            insertDatastation(db, data.datastationID, data.sensortype, data.area, data.unit, function(){
+            insertDatastation(db, datastationID, sensortype, area, unit, function(){
                 db.close(function(err){
                     if(err != null) {
                         console.log(err);
                     }
-                    dbIsOpen = false;
-                    handleQueue();
                 });
             });
 
         });   
-    }
-}
+
+        //Send status code 200
+        res.sendStatus(200); 
+        
+})
 
 function insertDatastation(db, datastationID, sensortype, area, unit, cb){
 	//Check if the datastation exists 
