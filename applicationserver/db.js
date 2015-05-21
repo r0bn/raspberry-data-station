@@ -355,11 +355,11 @@ function handleQueue() {
             //Insert data into database and begin with the datastation
             insertDatastation(db, data.datastationID, data.sensortype, data.area, data.unit, function(){
                 db.close(function(err){
-                if(err != null) {
-                    console.log(err);
-                }
-                dbIsOpen = false;
-                handleQueue();
+                    if(err != null) {
+                        console.log(err);
+                    }
+                    dbIsOpen = false;
+                    handleQueue();
                 });
             });
 
