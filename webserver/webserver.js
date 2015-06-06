@@ -43,14 +43,14 @@ app.get('/init', function (req, res) {
 app.get('/data', function (req, res) {
 	console.log("query:" + JSON.stringify(req.query));
 	req.query.datastationID = req.query.datastationID.split(",");
-	var startdates = req.query.startdate.split(",");
+	var dates = req.query.date.split(",");
 	var dataArray = [];
 	var jsonresponse = {};
 	jsonresponse.request = req.query;
 	
-	async.each(startdates,
-		function(startdate, callback){
-			req.query.startdate = startdate;
+	async.each(dates,
+		function(date, callback){
+			req.query.date = date;
 			requestData(req, function (data) {
 				dataArray.push(data);
 				callback()
@@ -94,10 +94,11 @@ function mergeData(dataArray)
 	
 var requestData = function(req, callback){
     var finerAggregation;
-	var dateParts = req.query.startdate.split("/");
+	var dateParts = req.query.date.split("/");
 	var str = dateParts[2]+"-"+dateParts[1]+"-"+dateParts[0]+" 00:00:00";
-	var startDate = new Date(str);
-	var endDate = new Date(startDate);
+	var endDate = new Date(str);
+	endDate.setDate(endDate.getDate() + 1);
+	var startDate = new Date(endDate);
 	var datastationID = req.query.datastationID;   
 	var sensortypeID = req.query.sensortypeID;
 	var title;
@@ -105,22 +106,22 @@ var requestData = function(req, callback){
     	case "year":
 			title = "Monthly ";
         	finerAggregation = "m";
-        	endDate.setFullYear(startDate.getFullYear() + 1); 
+        	startDate.setMonth(startDate.getMonth() - 12);
         	break;
     	case "month":
 			title = "Daily ";
         	finerAggregation = "d";
-        	endDate.setMonth(startDate.getMonth() + 1);
+        	startDate.setMonth(startDate.getMonth() - 1);
         	break;
         case "week":
 			title = "Daily ";
         	finerAggregation = "d";
-        	endDate.setDate(startDate.getDate() + 7);
+        	startDate.setDate(startDate.getDate() - 7);
         	break;
         case "day":
 			title = "Hourly ";
         	finerAggregation = "H";
-        	endDate.setDate(startDate.getDate() + 1);
+        	startDate.setDate(startDate.getDate() - 1);
         	break;
 	}
 	
@@ -166,7 +167,8 @@ function pad(n) {
 function createTimeframes (startDate, endDate, finerAggregation){
 	var timeframes = [];
 	var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-	for (var time = new Date (startDate); time < endDate; ) {
+	var zaehler = 0;
+	for (var time = new Date (startDate); time < endDate || ( finerAggregation == "m" && time <=endDate); zaehler++ ) {
 		var timestring = "";
 		switch(finerAggregation) {
 		case "m":
@@ -182,7 +184,11 @@ function createTimeframes (startDate, endDate, finerAggregation){
 			time.setHours(time.getHours () +1);
 			break;
 		}
-		timeframes.push(timestring);
+		if (finerAggregation == "m" && zaehler==0){
+			//do nothing
+		} else { 
+			timeframes.push(timestring);
+		}
 	};
 	return timeframes;
 }
@@ -205,7 +211,7 @@ function fillAreaDictionary (startDate, finerAggregation, areaDictionary, rows)
 		var difference = 0;
 		switch(finerAggregation) {
 			case "m": 
-				difference =  new Date(item.Timestamp).getMonth() - (startDate.getMonth());
+				difference =  new Date(item.Timestamp).getMonth() - (startDate.getMonth()+1);
 				difference = (difference < 0)?difference + 12 : difference;
 				break;
 			case "d":
@@ -218,12 +224,16 @@ function fillAreaDictionary (startDate, finerAggregation, areaDictionary, rows)
 				difference = (difference < 0)?difference + 24 : difference;
 				break;
 		}
-	
-		var dataObject = {};
-		dataObject.y = Number(item["Average"].toPrecision(4));
-		dataObject.low = Number(item["Minimum"].toPrecision(4));
-		dataObject.high = Number(item["Maximum"].toPrecision(4));
-		areaDictionary[item.ID][difference] = dataObject;
+		
+		if (finerAggregation == "m" && startDate.getMonth() == new Date(item.Timestamp).getMonth() && startDate.getFullYear() == new Date(item.Timestamp).getFullYear()){
+		//do nothing
+		}else{
+			var dataObject = {};
+			dataObject.y = Number(item["Average"].toPrecision(4));
+			dataObject.low = Number(item["Minimum"].toPrecision(4));
+			dataObject.high = Number(item["Maximum"].toPrecision(4));
+			areaDictionary[item.ID][difference] = dataObject;
+		}
 	});
 	return areaDictionary;
 }
