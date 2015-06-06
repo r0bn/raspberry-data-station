@@ -40,11 +40,12 @@ function initDatastationsAndSensortypes(json) {
     console.log(json['datastations']);
     console.log(json['sensortypes']);
     if (json.length == 0){
-        alert('no values for room and sensortypes in the database');
+        alert('no connection to database');
     }
-    else if (json['datastations'].length < 1 && json['sensortypes'].length < 1) {
-        console.log('no datastations and sensortypes, no values in database');
-    } else {
+    else {
+    if (json['datastations'].length < 1 && json['sensortypes'].length < 1) {
+        alert('no datastations, sensortypes and values in database');
+    }
         //SENSORCOMPARISON
 //        saveValuesAsArrayInSession(json);
     initJSON=json;
@@ -68,15 +69,17 @@ function initDatastationsAndSensortypes_UpdateFields(json, sensorOrTimespanCompa
             selectrooms.selectpicker('refresh');
         });
         
-        
-        //select first  (SENSORCOMPARISON EXTRA)
-        if(json['datastations'].length===1)
-        selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
-        if(json['datastations'].length>1 && SCorTC =="SC")
-        selectrooms.selectpicker('val', [json['datastations'][0]['ID'],json['datastations'][1]['ID']]);
-        if(json['datastations'].length>1 && SCorTC =="TC")
-        selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
-        
+        if (json['datastations'].length > 0){
+            //select first  (SENSORCOMPARISON EXTRA)
+            if(json['datastations'].length===1)
+            selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
+            //select two  (SENSORCOMPARISON)
+            if(json['datastations'].length>1 && SCorTC =="SC")
+            selectrooms.selectpicker('val', [json['datastations'][0]['ID'],json['datastations'][1]['ID']]);
+            //select one (TIMESPANCOMPARISON)
+            if(json['datastations'].length>1 && SCorTC =="TC")
+            selectrooms.selectpicker('val', [json['datastations'][0]['ID']]);
+        }
         //SENSORTYPES
         //first remove old options
         var selectsensortypes = sensorOrTimespanComparison.find('#sensortype select');
@@ -97,28 +100,39 @@ $('#timespancomparisonsubmit').click(function() {
 });
 
 function sensorComparison(){
+    var data = getParametersOfSensorComparsion();
+    console.log(data);
+    if (typeof(data.error) === 'undefined'){ 
         $.ajax({
-        type: 'GET',
-        url: '/data',
-        dataType: 'json',
-        data: getParametersOfSensorComparsion(),
-        success: function(json) {
-            console.log(json);
-            updateSensorAndTimespanComparisonChart(json, '#chartSensorComparsion');
-        }
-    });
+            type: 'GET',
+            url: '/data',
+            dataType: 'json',
+            data: data,
+            success: function(json) {
+                console.log(json);
+                updateSensorAndTimespanComparisonChart(json, '#chartSensorComparsion');
+            }
+        });
+    }else{
+        alert(data.error);
+    }
 }
 function timespanComparison(){
+    var data = getParametersOfTimespanComparsion();
+    if (typeof(data.error) === 'undefined'){ 
         $.ajax({
-        type: 'GET',
-        url: '/data',
-        dataType: 'json',
-        data: getParametersOfTimespanComparsion(),
-        success: function(json) {
-            console.log(json);
-            updateSensorAndTimespanComparisonChart(json, '#chartTimespanComparsion');
-        }
-    });
+            type: 'GET',
+            url: '/data',
+            dataType: 'json',
+            data: data,
+            success: function(json) {
+                console.log(json);
+                updateSensorAndTimespanComparisonChart(json, '#chartTimespanComparsion');
+            }
+        });
+    }else{
+        alert(data.error);
+    }
 }
 
 function getParametersOfSensorComparsion() {
@@ -131,7 +145,14 @@ function getParametersOfSensorComparsion() {
     var sensortype = sC.find('#sensortype option:selected').val();
     var timespan = sC.find('#aggregation .active input').val();
     var startdate = $('#datepicker1').val();
-    return {'datastationID': datastations, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate};
+    if (datastations == "" && typeof(sensortype) === 'undefined'){
+        return {error:'No sensortype and no datastations selected !'};
+    }else if (typeof(datastations) == "" ){
+        return {error:'No datastations selected !'};
+    }else if (typeof(sensortype) === 'undefined' ){
+        return {error:'No sensortype selected !'};
+    }
+    return {datastationID: datastations, sensortypeID: sensortype, timespan: timespan, date: startdate};
 }
 
 function getParametersOfTimespanComparsion() {
@@ -141,7 +162,14 @@ function getParametersOfTimespanComparsion() {
     var timespan = tC.find('#aggregation .active input').val();
     var startdate2 = $('#datepicker2').val();
     var startdate3 = $('#datepicker3').val();
-    return {'datastationID': datastation, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate2+','+startdate3};
+    if (typeof(datastation) === 'undefined' && typeof(sensortype) === 'undefined'){
+        return {error:'No sensortype and no datastations selected !'};
+    }else if (typeof(datastation) === 'undefined' ){
+        return {error:'No datastations selected !'};
+    }else if (typeof(sensortype) === 'undefined' ){
+        return {error:'No sensortype selected !'};
+    }
+    return {datastationID: datastation, sensortypeID: sensortype, timespan: timespan, date: startdate2+','+startdate3};
 }
 
 function updateSensorAndTimespanComparisonChart(json, chartID) {
@@ -175,7 +203,7 @@ function updateSensorAndTimespanComparisonChart(json, chartID) {
         });       
         var dataPerAreaSpline = {type: 'spline', name: datastationname+ " "+dataPerArea.nameTimeframe, data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaSpline);
-        var dataPerAreaAreaRange = {type: 'areasplinerange', name: datastationname + " "+dataPerArea.nameTimeframe+" (min-max)", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
+        var dataPerAreaAreaRange = {type: 'areasplinerange', name: " min-max", data: dataPerArea.data, color: Highcharts.getOptions().colors[colorid]};
         chart.addSeries(dataPerAreaAreaRange);
         colorid++;
     });
