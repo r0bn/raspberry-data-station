@@ -12,6 +12,7 @@ import sys
 from ctypes import *
 #cdll.LoadLibrary("./bcm2835.so")
 import math
+import Adafruit_DHT
 
 
 # Path to Application and DB Server 
@@ -115,6 +116,22 @@ def read_sensor(path):
     return value
 
 
+# dht 11
+def read_sensor_dht11_humidty():
+
+    # Try to grab a sensor reading.  Use the read_retry method which will retry up
+    # to 15 times to get a sensor reading (waiting 2 seconds between each retry).
+    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 4)
+    return humidity
+
+# dht 11
+def read_sensor_dht11_temp():
+
+    # Try to grab a sensor reading.  Use the read_retry method which will retry up
+    # to 15 times to get a sensor reading (waiting 2 seconds between each retry).
+    humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 4)
+    return temperature 
+
 
 # json gateway to application server
 def send_json(value, sensortype, datastationId, unit, area):
@@ -140,6 +157,14 @@ area = sys.argv[3]
 if sensorK == "ds1820":
     value = read_sensor(path)
     send_json(value, 'temperature', datastationId, '°C', area)
+
+if sensorK == "dht11temp":
+    value = read_sensor_dht11_temp()
+    send_json(value, 'temperature', datastationId, '°C', area)
+
+if sensorK == "dht11hum":
+    value = read_sensor_dht11_humidty()
+    send_json(value, 'humidity', datastationId, '%', area)
 
 if sensorK == "mpl3115a2T":
     mpl = mpl3115a2()
