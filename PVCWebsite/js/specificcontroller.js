@@ -152,7 +152,7 @@ function getParametersOfSensorComparsion() {
     }else if (typeof(sensortype) === 'undefined' ){
         return {error:'No sensortype selected !'};
     }
-    return {'datastationID': datastations, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate};
+    return {datastationID: datastations, sensortypeID: sensortype, timespan: timespan, date: startdate};
 }
 
 function getParametersOfTimespanComparsion() {
@@ -169,7 +169,7 @@ function getParametersOfTimespanComparsion() {
     }else if (typeof(sensortype) === 'undefined' ){
         return {error:'No sensortype selected !'};
     }
-    return {'datastationID': datastation, 'sensortypeID': sensortype, 'timespan': timespan, 'startdate': startdate2+','+startdate3};
+    return {datastationID: datastation, sensortypeID: sensortype, timespan: timespan, date: startdate2+','+startdate3};
 }
 
 function updateSensorAndTimespanComparisonChart(json, chartID) {
