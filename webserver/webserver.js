@@ -46,7 +46,6 @@ app.get('/data', function (req, res) {
 	var dates = req.query.date.split(",");
 	var dataArray = [];
 	var jsonresponse = {};
-	jsonresponse.request = req.query;
 	
 	async.each(dates,
 		function(date, callback){
